@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+: ${XDG_CONFIG_HOME:="$HOME/.config"}
+: ${XDG_CACHE_HOME:="$HOME/.cache"}
+
+[[ ! -d $XDG_CONFIG_HOME/wget ]] && mkdir "$XDG_CONFIG_HOME/wget"
+[[ ! -d $XDG_CACHE_HOME/wget ]] && mkdir "$XDG_CACHE_HOME/wget"
+
+echo hsts-file \= "$XDG_CACHE_HOME"/wget/wget-hsts > "$XDG_CONFIG_HOME/wget/wgetrc"
+
+if [[ -z "${WGETRC}" ]]; then
+  printf "\e[1;31m%s\n" 'Please add `export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"` to .profile'
+fi
