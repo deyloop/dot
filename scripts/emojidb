@@ -1,0 +1,39 @@
+#!/usr/bin/bash
+set -e
+
+# query emoji 
+
+: ${XDG_DATA_HOME:="$HOME/.local/share"}
+EMOJI_DATA_DIR="$XDG_DATA_HOME/emojidb"
+EMOJI_DATA_JSON="$EMOJI_DATA_DIR/emoji.json"
+
+if [[ ! -f $EMOJI_DATA_JSON ]]; then
+  mkdir -p "$EMOJI_DATA_DIR"
+
+  # download the json file
+  echo "Downloading Emoji Database" >&2
+  wget "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json" -P "$EMOJI_DATA_DIR"
+  echo "Emoji Database Downloaded" >&2
+fi
+
+strip_quotes() {
+  while IFS= read line; do
+    line="${line#\"}"
+    line="${line%\"}"
+    echo "$line"
+  done
+}
+
+printall() {
+  jq '.[] |  .emoji + " " + .aliases[]' "$EMOJI_DATA_JSON" | strip_quotes
+}
+
+search_term="$1"
+
+if [[ -z $search_term ]]; then
+  printall
+fi
+
+
+
+

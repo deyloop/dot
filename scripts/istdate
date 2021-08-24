@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+TZ='Asia/Kolkata' date +"%H:%M"

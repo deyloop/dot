@@ -1,0 +1,32 @@
+#!/usr/bin/bash
+
+# Toggles the Font size of the terminal to and from 'Big Font' mode.
+# This is done by changing the xfce4 terminalrc file directly to not use
+# the system font and use the font specified in the terminalrc, which
+# should be set to a big number for this to work.
+
+terminalrc=~/.config/xfce4/terminal/terminalrc
+
+[[ -f "$terminalrc" ]] || exit
+
+_toggle() {
+  while IFS= read -r line; do
+    case $line in
+      FontUseSystem=TRUE) echo "FontUseSystem=FALSE" ;;
+      FontUseSystem=FALSE) echo "FontUseSystem=TRUE" ;;
+      *) echo "$line" ;;
+    esac
+  done < "$terminalrc"
+}
+
+# Atomically changing the file requires that we write to a temp file and
+# then move that temp file into the original file. 
+tempfile=$(mktemp)
+
+_toggle >"$tempfile"
+
+# Backup file created every time, just in case.
+cp "$terminalrc" "${terminalrc}.bak"
+mv "$tempfile" "$terminalrc"
+
+rm -rf "$tempfile"

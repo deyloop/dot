@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+get_head() {
+  read line; printf "%s" "${line%%[[:space:]]*}"
+}
+
+emojidb | rofi -dmenu | get_head | xclip -i -f -selection primary | xclip -i -selection clipboard

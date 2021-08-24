@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+set -e
+# Starts playing lofi music from a youtube stream inside a tmux session
+
+type tmux &>/dev/null
+
+# if music session already exists, get rid of it
+tmux has-session -t music &>/dev/null && tmux kill-session -t music
+
+# start the new session and start playing music
+tmux new-session \
+  -d \
+  -s music \
+  bash
+tmux send-keys -t music.0 "mpv --no-video https://www.youtube.com/watch?v=5qap5aO4i9A" ENTER
+# jazz at https://www.youtube.com/watch?v=DSGyEsJ17cI and https://www.youtube.com/watch?v=fAi7IeJG-6Y&t=15s
+echo Playing Lofi Music
+

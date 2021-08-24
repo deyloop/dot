@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+
+# Creates a new executable script. Makes sure it is executable. 
+# By default, creates the script in the `SCRIPTS_DIR` directory. This behavior
+# can be changed by passing the directory where the script needs to be created
+# as the second argument.
+
+if [[ -z "${SCRIPTS_DIR}" ]]; then
+  SCRIPTS_DIR="$HOME/.local/bin/scripts"
+fi
+
+[[ $# -ge 1 ]] && script_name="$1" || exit
+
+script_dir="$SCRIPTS_DIR"
+[[ $# -ge 2 ]] && script_dir="$2" 
+
+script_path="$script_dir/$script_name"
+
+# create the file with the shebang line
+echo "#!/usr/bin/bash" >>"$script_path"
+
+# make it executable
+chmod ug+x "$script_path"
+
+# open script to edit
+exec vim "$script_path"

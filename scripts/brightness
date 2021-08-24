@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+set -e
+
+# increases or decreases the brightness of the screen.
+# depends on
+# - xbacklight
+# - dunst and dunstify
+
+# The amount to increment or decrement
+: ${CHANGE_AMOUNT:=1}
+
+inc() {
+  xbacklight -inc "$1"%
+}
+
+dec() {
+  xbacklight -dec "$1"%
+}
+
+brightness() {
+  option="$1"
+  case "$option" in
+    up) inc "$CHANGE_AMOUNT" ;;
+    down) dec "$CHANGE_AMOUNT" ;;
+    *) echo "USAGE: brightness up|down" ;;
+  esac
+
+  bval=$(xbacklight -get)
+  bval=${bval%%\.*}
+  id=9292
+
+  dunstify \
+    -t "$id" \
+    -r "$id" \
+    -u low \
+    -i 'preferences-system-brightness-lock' \
+    -h int:value:"$bval" \
+    "Brightness"
+}
+
+brightness $@

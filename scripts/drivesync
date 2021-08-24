@@ -1,0 +1,71 @@
+#!/usr/bin/bash
+
+# Utils for syncing with remote drives.
+
+_drivesync() {
+    # check if the prerequisites are installed,
+    # Install them if not already installed
+    if ! command -v rclone &> /dev/null
+    then
+        echo "rclone prerequisite not installed. Installing and configuring..."
+        if command -v pacman &> /dev/null
+        then
+            sudo pacman -S --noconfirm rclone
+        fi # add to install via other package manager like apt-get
+
+        read -p "rclone client ID (see https://rclone.org/drive/#making-your-own-client-id): " VAR_RCLONE_DRIVE_CLIENT_ID
+        read  -p "rclone client secret: " VAR_RCLONE_DRIVE_CLIENT_SECRET
+        rclone config create private-drive drive \
+            scope drive.appfolder \
+		    client_id "$VAR_RCLONE_DRIVE_CLIENT_ID" \
+		    client_secret "$VAR_RCLONE_DRIVE_CLIENT_SECRET" 
+
+        read -p "root folder id: " VAR_ROOT_FOLDER_ID
+        rclone config create remote-drive drive \
+            scope drive \
+            client_id "$VAR_RCLONE_DRIVE_CLIENT_ID" \
+            client_secret "$VAR_RCLONE_DRIVE_CLIENT_SECRET" \
+            root_folder_id "$VAR_ROOT_FOLDER_ID"
+        
+        read -p "encryption password: " VAR_ENCRYPTION_PASSWORD
+        read -p "salting password: " VAR_SALTING_PASSWORD
+        rclone config create private-drive-encrypt crypt remote \
+		    private-drive:Private \
+		    filename_encryption "standard" \
+		    directory_name_encryption false \
+		    password $(rclone obscure $VAR_ENCRYPTION_PASSWORD) \
+		    password2 $(rclone obscure $VAR_SALTING_PASSWORD)
+
+    fi
+    if ! command -v stow &> /dev/null
+    then
+        echo "GNU stow prerequisite not installed. Installing..."
+        if command -v pacman &> /dev/null
+        then
+            sudo pacman -S --noconfirm stow
+        fi # add to install via other package managers like apt-get.
+    fi
+    case "$1" in
+        backup)
+            rclone sync -PL "$HOME/drive" remote-drive:Drive ;;
+        restore)
+            rclone sync -PL remote-drive:Drive "$HOME/Drive" ;;
+        up)
+            rclone sync -PL "$HOME/private" private-drive-encrypt: ;;
+        down)
+            rclone sync -PL private-drive-encrypt: "$HOME/private"
+            CURDIR=$PWD # save current directory so we can return after sync
+            cd "$HOME/private" || return
+            stow home
+            cd "$CURDIR" || return
+            ;;
+        *)
+            echo "UNRECOGNIZED COMMAND"
+            echo "commands: backup restore up down"
+            echo "backup and restore - for Non-private Files (~/Drive)"
+            echo "up and down - for Private Files (~/Private)"
+            ;;
+    esac
+}
+
+_drivesync "$*"

@@ -1,0 +1,63 @@
+#!/usr/bin/bash
+set -e
+
+# Used to clone a new git repo into the correct location, making any
+# directories when needed. The script then switches to the directory of
+# the cloned repository after cloning.
+
+# Depends on:
+# - git
+
+# root directory where all git repos will be placed
+: ${REPOS_DIR:="$HOME/repos"} 
+
+clone() {
+  local repo_url="$1"
+
+  # example url: git@github.com:deyloop/notebox.git
+  # TODO: add supposrt for urls starting with https://
+  # TODO: add url format validation support.
+
+  # validate url
+  local regex='^git@([-A-Za-z.]*):([-A-Za-z0-9_-]*)/([-A-Za-z0-9_]*)(.git)?$'
+  if [[ ! $repo_url =~ $regex ]]; then
+    echo 'Repo url format not supported. Clone manually.'
+    exit
+  fi
+
+  # extract the host, username and reponame
+  local _url host reponame username
+
+  _url=${repo_url#git@}
+  _url=${_url%\.git}
+  host=${_url%%:*}
+
+  reponame=${_url##*/}
+
+  username=${_url##*:}
+  username=${username%%/*}
+
+
+  local clone_path="$REPOS_DIR/$host/$username/$reponame"
+
+  # create the clone path (parents created too, if not already there)
+  mkdir -p "$clone_path"
+
+  # perform the clone
+  if ! git clone "$repo_url" "$clone_path"; then
+    rmdir -p --ignore-fail-on-non-empty "$clone_path"
+    echo "Clone failed"
+    exit
+  fi
+
+  # change into the cloned directory and list contents
+  echo "Clone complete"
+}
+
+if [[ $# -ne 1 ]]; then
+  echo "USAGE: ${0##*/} url"
+  exit 1
+fi
+
+
+clone $@

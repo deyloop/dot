@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+set -e
+
+# Controls the system volume
+# depends on 
+# - amixer
+# - dunst and dunstify
+
+: ${CHANGE_AMOUNT:=1}
+
+inc() {
+  amixer -D pulse set Master "$1"%+
+}
+
+dec() {
+  amixer -D pulse set Master "$1"%-
+}
+
+mute() {
+  amixer -D pulse set Master 1+ toggle""
+}
+
+vol() {
+  option="$1"
+  case "$option" in
+    up) inc "$CHANGE_AMOUNT" ;;
+    down) dec "$CHANGE_AMOUNT" ;;
+    mute) mute ;;
+    *) echo "USAGE: vol up|down|mute" ;;
+  esac
+
+  volval=$(awk -F"[][]" '/Left:/ { print $2 }' <(amixer -D pulse sget Master))
+  volval=${volval%%\%}
+
+  id=9293
+
+  dunstify \
+    -t "$id" \
+    -r "$id" \
+    -u low \
+    -h string:x-dunst-stack-tag:audio \
+    -i 'audio-volume-medium' \
+    -h int:value:"$volval" \
+    "Volume"
+}
+
+vol $@
+

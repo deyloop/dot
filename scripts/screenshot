@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+set -e
+
+# takes screenshot and saves it in the XDG_PICTURES_HOME directory
+
+# depends on:
+# - scrot
+# - dunst / dunstify
+
+type scrot &>/dev/null || exit
+
+PICSFOLDER=$(xdg-user-dir PICTURES)/screenshots/
+[[ -d $PICSFOLDER ]] || mkdir -p $PICSFOLDER
+
+filename="$(date +"%Y-%m-%d%H%M%S.png")"
+path="${PICSFOLDER}${filename}"
+
+scrot $path
+
+option=$(dunstify -A 'view,View Image' -I "$path" "Screenshot" "Saved to ${path}")
+if [[ $option == view ]]; then
+  xdg-open "$path"
+fi

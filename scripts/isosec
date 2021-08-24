@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+# Displays the time in ISOSEC format
+# YYYYMMDDHHmmss, hour in 24 hour format, time in UTC
+
+date -u +%Y%m%d%H%M%S
