@@ -1,0 +1,87 @@
+-- Configure the status bar for xmonad: https://wiki.archlinux.org/index.php/Xmobar
+
+Config 
+  { font = "xft:Hack:pixelsize=13:antialias=true:hinting=true,Font Awesome 5 Free Solid:pixelsize=12"
+  , borderColor = "black"
+  , border = TopB
+  , additionalFonts = 
+      [ "xft:Font Awesome 5 Free Solid:pixelsize=12"
+      ]
+  , bgColor = "#1b1e21"
+  , fgColor = "grey"
+  , position = TopW L 100
+  , commands = 
+      [ Run MultiCpu 
+          [ "-t", "<fn=1>\xf2db</fn><total0><total1><total2><total3>"
+          , "-L","30"
+          , "-H","60"
+          , "-h","#FFB6B0"
+          , "-l","#5fafd7"
+          , "-n","#5fafd7"
+          , "-w","3"
+          ] 20
+      , Run Memory 
+          [ "-t", "<fn=1>\xf233</fn> <usedratio>%"
+          ] 50
+      , Run Battery 
+          [ "-t", "<acstatus> <left>% <timeleft>"
+          , "-L","30"
+          , "-H","60"
+          , "-h","green"
+          , "-n","yellow"
+          , "-l","red"
+          , "--"
+          , "-O", "<fn=1>\xf0e7</fn>"       -- when charging
+          , "-i", "<fn=1>\xf240</fn>"       -- when fully charged
+          , "-o", ""
+          , "--highs", "<fn=1>\xf241</fn>"  -- when high
+          , "--medium", "<fn=1>\xf242</fn>" -- when medium
+          , "--lows" , "<fn=1>\xf243</fn>"  -- when low
+          ] 10
+      , Run Date "<fn=1>\xf017</fn> %a %F %H:%M:%S" "date" 10
+      , Run Volume "default" "Master" 
+          [ "-t", "<status> <volume>"
+          , "--"
+          , "-H", "66"
+          , "-L", "33"
+          , "-O", ""
+          , "-o", "<fn=1>\xf026</fn>" -- muted
+          , "-l", "<fn=1>\xf027</fn>" -- low
+          , "-m", "<fn=1>\xf028</fn>" -- medium
+          , "-h", "<fn=1>\xf028</fn>" -- high
+          , "-c", "#585858" -- color when muted
+          , "-C", "#d7875f" -- color when not muted
+          ] 10
+      , Run Com "/home/deyloop/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 10
+      , Run Com "/home/deyloop/.local/bin/scripts/istdate" [] "ist" 600
+      , Run Com "/home/deyloop/.local/bin/pomo" [] "pomo" 10
+      , Run UnsafeStdinReader
+     ]
+  , sepChar = "%"
+  , alignSep = "}{"
+  , lowerOnStart = True
+  , hideOnStart = False
+  , persistent = True
+  , allDesktops = True
+  , template = ": %UnsafeStdinReader%\
+                \}{\
+                \%pomo%\
+                \ <fc=#585858>|</fc> \
+                  \<action=`alacritty -e htop`>\
+                    \<fc=#af005f>%multicpu%</fc>\
+                  \</action>\
+                \ <fc=#585858>|</fc> \
+                  \<action=`alacritty -e htop`>\
+                    \<fc=#afd700>%memory%</fc>\
+                  \</action>\
+                \ <fc=#585858>|</fc> \
+                    \<fc=#5fafd7>%battery%</fc>\
+                \ <fc=#585858>|</fc> \
+                  \<action=`pavucontrol`>\
+                    \<fc=#d7875f>%default:Master%</fc>\
+                  \</action>\
+                \ <fc=#585858>|</fc> \
+                \<fc=#af87d7>%date% | %ist%</fc>\
+                \ <fc=#585858>|</fc> \
+                \%trayerpad% :"
+  }
