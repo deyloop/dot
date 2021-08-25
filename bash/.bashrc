@@ -2,27 +2,20 @@
 # ~/.bashrc
 #
 
+# This bashrc is supposed to run only when the shell is invoked as an 
+# interactove shell
 [[ $- != *i* ]] && return
 
-[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
 
-# Change the window title of X terminals
-case ${TERM} in
-  xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\n\007"'
-    ;;
-  screen*)
-    PROMPT_COMMAND='echo -ne "\034_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\n\033\\"'
-    ;;
-esac
+#------------------------------TERM Colors------------------------------
 
-use_color=true
+USE_COLOR=true
 
-# Set colorful PS1 only on colorful terminals.
-# dircolors --print-database uses its own built-in database
-# instead of using /etc/DIR_COLORS.  Try to use the external file
-# first to take advantage of user additions.  Use internal bash
-# globbing instead of external grep binary.
+# Set colorful PS1 only on colorful terminals.  dircolors
+# --print-database uses its own built-in database instead of using
+# /etc/DIR_COLORS.  Try to use the external file first to take advantage
+# of user additions.  Use internal bash globbing instead of external
+# grep binary.
 safe_term=${TERM//[^[:alnum:]]/?}   # sanitize TERM
 match_lhs=""
 [[ -f ~/.config/dir_colors   ]] && match_lhs="${match_lhs}$(<~/.config/dir_colors)"
@@ -30,10 +23,9 @@ match_lhs=""
 [[ -z ${match_lhs}    ]] \
 	&& type -P dircolors >/dev/null \
 	&& match_lhs=$(dircolors --print-database)
-[[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
+[[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && USE_COLOR=true
 
-
-if ${use_color} ; then
+if ${USE_COLOR} ; then
   # Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
   if type -P dircolors >/dev/null ; then
     if [[ -f ~/.config/dir_colors ]] ; then
@@ -49,13 +41,20 @@ if ${use_color} ; then
   alias fgrep='fgrep --colour=auto'
 fi
 
-# Sets the PS1 prompt, loud and proper. Has git integrations and previous
-# command status
+# This environment variable can be used to conditionally display colors
+# in other scripts
+export USE_COLOR
+
+
+#------------------------------Shell Promt------------------------------
+
+# Sets the PS1 prompt, loud and proper. Has git integrations and
+# previous command status
 __ps1() {
   local exit_code="$?"
   local branch=$(git branch --show-current 2>/dev/null)
 
-  if ${use_color}; then
+  if ${USE_COLOR}; then
     local q='\[\e[0;35m\]'
     local g='\[\e[0;32m\]'
     local h='\[\e[0;34m\]'
@@ -86,17 +85,22 @@ __ps1() {
 }  
 PROMPT_COMMAND="__ps1"
 
-unset use_color safe_term match_lhs sh
 
-alias cp="cp -i"                          # confirm before overwriting something
-alias df='df -h'                          # human-readable sizes
-alias free='free -m'                      # show sizes in MB
-alias np='nano -w PKGBUILD'
-alias more=less
+#-----------------------------------------------------------------------
 
-xhost +local:root > /dev/null 2>&1
+unset safe_term match_lhs sh
+
+#----------------------------Bash Completion----------------------------
+
+# Completion for core utils, I guess
+if [[ -r /usr/share/bash-completion/bash_completion ]]; then 
+  source /usr/share/bash-completion/bash_completion
+fi
 
 complete -cf sudo
+
+
+#-----------------------------Shell Options-----------------------------
 
 # Bash won't get SIGWINCH if another process is in the foreground.
 # Enable checkwinsize so that bash will check the terminal size when
@@ -106,49 +110,49 @@ shopt -s checkwinsize
 
 shopt -s expand_aliases
 
-# Enable history appending instead of overwriting.  #139609
-shopt -s histappend
-
-#
-# # ex - archive extractor
-# # usage: ex <file>
-ex ()
-{
-  if [ -f $1 ] ; then
-    case $1 in
-      *.tar.bz2)   tar xjf $1   ;;
-      *.tar.gz)    tar xzf $1   ;;
-      *.bz2)       bunzip2 $1   ;;
-      *.rar)       unrar x $1   ;;
-      *.gz)        gunzip $1    ;;
-      *.tar)       tar xf $1    ;;
-      *.tbz2)      tar xjf $1   ;;
-      *.tgz)       tar xzf $1   ;;
-      *.zip)       unzip $1     ;;
-      *.Z)         uncompress $1;;
-      *.7z)        7z x $1      ;;
-      *)           echo "'$1' cannot be extracted via ex()" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
-  fi
-}
-
-# Personal Options
-
-CDPATH="."
-CDPATH+=":~/.local/bin"
-CDPATH+=":~/repos"
-CDPATH+=":~/repos/github.com/deyloop"
-CDPATH+=":~"
-
-alias dotfiles='/usr/bin/git --git-dir=/home/deyloop/.dotfiles --work-tree=/home/dac'
-alias scripts='cd ~/.local/bin/scripts'
-alias '?'=duck
-
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-
-. cdl.sh
 
 # vi keybindings for terminal
 set -o vi
+
+
+#--------------------------------History--------------------------------
+
+# Enable history appending instead of overwriting.  #139609
+shopt -s histappend
+
+# Ignores the current command if its duplicate of the previous command,
+# Keeping the history clean and making it easier to press k or up to get
+# to previous commands
+HISTCONTROL=ingnoredups
+
+# Huge history, cos my life depends on it
+HISTSIZE=1000000
+
+
+#---------------------------------CDPATH--------------------------------
+
+: ${REPOS_DIR:="$HOME/repos"}
+: ${GITHUB_USER:="$USER"}
+
+CDPATH="."
+CDPATH+=":~/.local/bin"
+CDPATH+=":$REPOS_DIR"
+CDPATH+=":$REPOS_DIR/github.com/$GITHUB_USER"
+CDPATH+=":~"
+
+
+#--------------------------------Aliases--------------------------------
+
+alias cp="cp -i"                  # confirm before overwriting something
+alias df='df -h'                  # human-readable sizes
+alias free='free -m'              # show sizes in MB
+alias more=less
+
+alias '?'=duck
+
+source cdl.sh # this is also sort of like an alias
+
+
+#-----------------------------------------------------------------------
+
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
