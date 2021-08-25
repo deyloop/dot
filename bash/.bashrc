@@ -7,6 +7,7 @@
 [[ $- != *i* ]] && return
 
 
+
 #------------------------------TERM Colors------------------------------
 
 USE_COLOR=true
@@ -82,6 +83,13 @@ __ps1() {
 
     PS1="[$user@$host:$dir$branch]\n\$"
   fi
+  # Change the window title of X terminals
+
+  case ${TERM} in
+    xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*|tmux*)
+      echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\n\007"
+      ;;
+  esac
 }  
 PROMPT_COMMAND="__ps1"
 
