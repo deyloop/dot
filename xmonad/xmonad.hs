@@ -121,7 +121,7 @@ myTabTheme = def { fontName            = "xft:Hack:size=9"
 myXmobarPP :: PP
 myXmobarPP = def
   { ppSep               = magenta " • "
-  , ppTitle             = green . shorten 50 
+  , ppTitle             = green . shorten 65
   , ppLayout            = lowWhite
   , ppCurrent           = wrap (blue "[") (blue "]") . yellow
   , ppHidden            = white . wrap " " "" . clickable
