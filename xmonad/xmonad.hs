@@ -54,28 +54,28 @@ myConfig = def
 
 myKeys =
   -- application shortcuts
-  [ ("M-w", spawn "firefox &")
-  , ("M-f", spawn "thunar &")
-  , ("M-<Return>", spawn $ myTerminal ++ " &")
-  , ("M-S-p", spawn "~/.local/bin/scripts/pscircle-draw")
+  [ ("M-w"        , spawn "firefox &")
+  , ("M-f"        , spawn "thunar &")
+  , ("M-<Return>" , spawn $ myTerminal ++ " &")
+  , ("M-S-p"      , spawn "~/.local/bin/scripts/pscircle-draw")
 
   -- rofi menus
-  , ("M-z d", spawn "rofi -show drun &")
-  , ("M-z z", spawn "rofi -show run &")
-  , ("M-z w", spawn "rofi -show window &")
+  , ("M-z d", spawn "rofi -show drun")
+  , ("M-z z", spawn "rofi -show run")
+  , ("M-z w", spawn "rofi -show window")
 
   -- window management
   , ("M-q", kill)
 
   -- volume controls
-  , ("<XF86AudioMute>", spawn "~/.local/bin/scripts/vol mute")
-  , ("<XF86AudioLowerVolume>", spawn "~/.local/bin/scripts/vol down")
-  , ("<XF86AudioRaiseVolume>", spawn "~/.local/bin/scripts/vol up")
+  , ("<XF86AudioMute>"        , spawn "~/.local/bin/scripts/vol mute")
+  , ("<XF86AudioLowerVolume>" , spawn "~/.local/bin/scripts/vol down")
+  , ("<XF86AudioRaiseVolume>" , spawn "~/.local/bin/scripts/vol up")
 
   -- brightness controls
-  , ("<XF86MonBrightnessUp>", spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness up")
-  , ("<XF86MonBrightnessDown>", spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness down")
-  , ("S-<XF86MonBrightnessUp>", spawn "~/.local/bin/scripts/brightness up")
+  , ("<XF86MonBrightnessUp>"    , spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness up")
+  , ("<XF86MonBrightnessDown>"  , spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness down")
+  , ("S-<XF86MonBrightnessUp>"  , spawn "~/.local/bin/scripts/brightness up")
   , ("S-<XF86MonBrightnessDown>", spawn "~/.local/bin/scripts/brightness down")
 
   -- screenshot
@@ -121,7 +121,7 @@ myTabTheme = def { fontName            = "xft:Hack:size=9"
 myXmobarPP :: PP
 myXmobarPP = def
   { ppSep               = magenta " • "
-  , ppTitle             = green . shorten 65
+  , ppTitle             = green . ppWindow
   , ppLayout            = lowWhite
   , ppCurrent           = wrap (blue "[") (blue "]") . yellow
   , ppHidden            = white . wrap " " "" . clickable
@@ -130,10 +130,8 @@ myXmobarPP = def
   , ppOrder             = \[ws, l, t]-> [ws, l, t]
   }
   where
-    formatFocused   = wrap (white     "[") (white     "]") . magenta . ppWindow
-    formatUnFocused = wrap (lowWhite  "[") (lowWhite  "]") . blue . ppWindow
     ppWindow :: String -> String
-    ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 30
+    ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 65
 
     blue, lowWhite, magenta, red, white, yellow :: String -> String
     magenta  = xmobarColor "#ff5faf" ""
@@ -165,11 +163,11 @@ myStartupHook = do
   spawnOnce "dbus-launch dunst --config ~/.config/dunst/dunstrc &"
 
   -- keyboard and mouse settings
-  spawnOnce "setxkbmap -option \"ctrl:nocaps\"" -- map capslock to ctrl
-  spawnOnce "xcape -e 'Shift_L=Escape'"         -- map shift to esc
+  spawnOnce "setxkbmap -option \"ctrl:nocaps\" &" -- map capslock to ctrl
+  spawnOnce "xcape -e 'Shift_L=Escape' &"         -- map shift to esc
   -- touchpad tap to click
-  spawnOnce "xinput set-prop \"$(xinput list --name-only | grep Touchpad)\" 'libinput Tapping Enabled' 1"
-  spawnOnce "xsetroot -cursor_name left_ptr"    -- no cross cursor on desktop
+  spawnOnce "xinput set-prop \"$(xinput list --name-only | grep Touchpad)\" 'libinput Tapping Enabled' 1 &"
+  spawnOnce "xsetroot -cursor_name left_ptr &"    -- no cross cursor on desktop
 
   -- system tray and icons
   spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --transparent true --alpha 0 --padding 6 --tint 0xff1b1e22 --height 18 --distancefrom right --distance 10 &"
