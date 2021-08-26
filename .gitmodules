@@ -1,0 +1,3 @@
+[submodule "themes/Vimix-Midnight"]
+	path = themes/Vimix-Midnight
+	url = git@github.com:deyloop/Vimix-Midnight
