@@ -156,23 +156,20 @@ myStartupHook = do
   -- compositor
   spawnOnce "picom -CGb &"
 
-  -- set power savings for display
-  spawnOnce "xset s 480 dpms 600 600 600 &"
+  -- X server settings
+  spawnOnce $ "xset " ++ "-b "                      -- no bell, no heart attacks
+                      ++ "s 480 dpms 600 600 600 "  -- power saving stuff, idk     
+                      ++ "r rate 200 50 &"          -- keyboard key repeat
 
   -- desktop notifications
   spawnOnce "dbus-launch dunst --config ~/.config/dunst/dunstrc &"
 
-
   -- keyboard and mouse settings
   spawnOnce "setxkbmap -option \"ctrl:nocaps\"" -- map capslock to ctrl
   spawnOnce "xcape -e 'Shift_L=Escape'"         -- map shift to esc
-  spawnOnce "xset r rate 200 50"                -- increase key repeat
   -- touchpad tap to click
   spawnOnce "xinput set-prop \"$(xinput list --name-only | grep Touchpad)\" 'libinput Tapping Enabled' 1"
   spawnOnce "xsetroot -cursor_name left_ptr"    -- no cross cursor on desktop
 
-
   -- system tray and icons
   spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --transparent true --alpha 0 --padding 6 --tint 0xff1b1e22 --height 18 --distancefrom right --distance 10 &"
-  -- spawnOnce "nm-applet --sm-disable &" -- network manager
-  -- spawnOnce "blueberry-tray &"         -- bluetooth
