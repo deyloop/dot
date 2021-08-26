@@ -235,8 +235,8 @@ if !empty(glob(plug_path))
     if executable("clang-format")
       au BufWritePre *.c,*.cpp,*.h,*.hpp,*.cxx,*.hxx silent call FormatBuffer("clang-format")
     endif
-    if executable("rustfmt -q")
-      au BufWritePre *.rs silent call FormatBuffer("rustfmt")
+    if executable("rustfmt")
+      au BufWritePre *.rs silent call FormatBuffer("rustfmt -q")
     endif
   augroup END
 
