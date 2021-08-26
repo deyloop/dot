@@ -27,8 +27,29 @@ if !empty($VIMXDG)
   " Neovim has its own special location
   if !has('nvim') 
     set viminfofile=$XDG_CACHE_HOME/vim/viminfo
+
   endif
 endif
+
+" analog of nvim's stdpath
+fun! VimStdPath(what)
+  if has('nvim')
+    return stdpath(a:what)
+  elseif !empty($VIMXDG)
+    let result = get({
+          \ 'data': $XDG_DATA_HOME."/vim",
+          \ 'config': $XDG_CONFIG_HOME."/vim",
+          \ 'cache': $XDG_CACHE_HOME."/vim"
+          \}, a:what)
+    return result
+  else
+    let result = get({
+          \ 'data': '~/.vim',
+          \ 'config': '~/.vim',
+          \ 'cache': '~/.vim'
+          \}, a:what)
+    return result
+endfun
 
 " Config Options
 set nocompatible
@@ -82,155 +103,170 @@ set listchars=tab:>·,trail:~,extends:>,precedes:<,space:·,eol:↩
 
 nnoremap <F5> :source $MYVIMRC<CR>
 
-" Plugins
-call plug#begin('~/.local/share/vim/plugins')
+let data_dir = VimStdPath('data')
+let plug_path = data_dir . '/autoload/plug.vim'
 
-  " Language Server support
-  Plug 'natebosch/vim-lsc'
+" I prefer to manually call this function to automatically download Plug and 
+" install all plugins if on a new system.
+function! GetPlug()
+  " Taken from https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
+  silent execute '!curl -fLo '.plug_path.' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endfunction
 
-  " Status line
-  Plug 'itchyny/lightline.vim'
+" Enable and configure plugins only if plug.vim is installed
+if !empty(glob(plug_path))
+  " Plugins
+  call plug#begin('~/.local/share/vim/plugins')
 
-  " Color Schemes
-  Plug 'NLKNguyen/papercolor-theme'
+    " Language Server support
+    Plug 'natebosch/vim-lsc'
 
-  " Debugging
-  Plug 'puremourning/vimspector'
+    " Status line
+    Plug 'itchyny/lightline.vim'
 
-  " Essentials
-  Plug 'tpope/vim-surround'
-  Plug 'jiangmiao/auto-pairs'
+    " Color Schemes
+    Plug 'NLKNguyen/papercolor-theme'
 
-  " Markdown with pandoc
-  Plug 'vim-pandoc/vim-pandoc'   
-  Plug 'vim-pandoc/vim-pandoc-syntax'   
+    " Debugging
+    Plug 'puremourning/vimspector'
 
-call plug#end()
+    " Essentials
+    Plug 'tpope/vim-surround'
+    Plug 'jiangmiao/auto-pairs'
 
-" ColorScheme Settings
-if exists('+termguicolors') && ($TERM == "xterm-256color" || $TERM == "tmux-256color" || $TERM == 'alacritty' || $TERM == 'xterm-kitty')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+    " Markdown with pandoc
+    Plug 'vim-pandoc/vim-pandoc'   
+    Plug 'vim-pandoc/vim-pandoc-syntax'   
 
-set background=dark
+  call plug#end()
 
-let g:PaperColor_Theme_Options = {
-      \ 'theme': {
-        \ 'default.dark': {
-          \ 'override' : {
-            \ 'color00' : ['#1B1E21', ''],
+  " ColorScheme Settings
+  if exists('+termguicolors') && ($TERM == "xterm-256color" || $TERM == "tmux-256color" || $TERM == 'alacritty' || $TERM == 'xterm-kitty')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    set termguicolors
+  endif
+
+  set background=dark
+
+  let g:PaperColor_Theme_Options = {
+        \ 'theme': {
+          \ 'default.dark': {
+            \ 'override' : {
+              \ 'color00' : ['#1B1E21', ''],
+            \ }
           \ }
         \ }
       \ }
-    \ }
 
-colorscheme PaperColor
+  colorscheme PaperColor
 
-set laststatus=2
-let g:lightline = {
-      \ 'colorscheme' : 'PaperColor',
-      \ 'mode_map': {
-        \ 'n' : 'N',
-        \ 'i' : 'I',
-        \ 'R' : 'R',
-        \ 'v' : 'V',
-        \ 'V' : 'VL',
-        \ "\<C-v>": 'VB',
-        \ 'c' : 'C',
-        \ 's' : 'S',
-        \ 'S' : 'SL',
-        \ "\<C-s>": 'SB',
-        \ 't': 'T',
-        \ },
-        \ }
+  set laststatus=2
+  let g:lightline = {
+        \ 'colorscheme' : 'PaperColor',
+        \ 'mode_map': {
+          \ 'n' : 'N',
+          \ 'i' : 'I',
+          \ 'R' : 'R',
+          \ 'v' : 'V',
+          \ 'V' : 'VL',
+          \ "\<C-v>": 'VB',
+          \ 'c' : 'C',
+          \ 's' : 'S',
+          \ 'S' : 'SL',
+          \ "\<C-s>": 'SB',
+          \ 't': 'T',
+          \ },
+          \ }
 
-set noshowmode
+  set noshowmode
 
-" pandoc settings
-let pandoc#formatting#textwidth = 72
+  " pandoc settings
+  let pandoc#formatting#textwidth = 72
 
-" Language support (LSP) via vim-lsc
-let g:lsc_server_commands = {
-      \ 'rust': 'rust-analyzer',
-      \ 'cpp': {
-        \ 'command': 'clangd --background-index',
-        \ 'suppress_stderr': v:true
-        \ },
-      \ 'haskell': {
-        \ 'command': 'haskell-language-server-wrapper --lsp'
-        \},
-      \ 'c': {
-        \ 'command': 'clangd --background-index',
-        \ 'suppress_stderr': v:true
-        \ },
-      \}
+  " Language support (LSP) via vim-lsc
+  let g:lsc_server_commands = {
+        \ 'rust': 'rust-analyzer',
+        \ 'cpp': {
+          \ 'command': 'clangd --background-index',
+          \ 'suppress_stderr': v:true
+          \ },
+        \ 'haskell': {
+          \ 'command': 'haskell-language-server-wrapper --lsp'
+          \},
+        \ 'c': {
+          \ 'command': 'clangd --background-index',
+          \ 'suppress_stderr': v:true
+          \ },
+        \}
 
-let g:lsc_auto_map = {
-      \ 'GoToDefinition': 'gd',
-      \ 'FindReferences': 'gr',
-      \ 'Rename': 'gR',
-      \ 'ShowHover': 'K',
-      \ 'FindCodeActions': 'ga',
-      \ 'Completion': 'omnifunc',
-      \}
-let g:lsc_hover_popup = v:false
+  let g:lsc_auto_map = {
+        \ 'GoToDefinition': 'gd',
+        \ 'FindReferences': 'gr',
+        \ 'Rename': 'gR',
+        \ 'ShowHover': 'K',
+        \ 'FindCodeActions': 'ga',
+        \ 'Completion': 'omnifunc',
+        \}
+  let g:lsc_hover_popup = v:false
 
-set completeopt=menu,menuone,noselect,noinsert
+  set completeopt=menu,menuone,noselect,noinsert
 
-let g:lsc_enable_autocomplete = v:false
-let g:lsc_enable_diagnostics = v:true
-let g:lsc_reference_highlights = v:false
-let g:lsc_trace_level = 'off'
+  let g:lsc_enable_autocomplete = v:false
+  let g:lsc_enable_diagnostics = v:true
+  let g:lsc_reference_highlights = v:false
+  let g:lsc_trace_level = 'off'
 
-set signcolumn=number
+  set signcolumn=number
 
-" Auto-Formatting code on save
-function! FormatBuffer(cmd)
-  if &modified
-    let cursor_pos = getpos('.')
-    execute "%!" . a:cmd
-    if v:shell_error | undo | endif
-    call setpos('.', cursor_pos)
-  endif
-endfunction
+  " Auto-Formatting code on save
+  function! FormatBuffer(cmd)
+    if &modified
+      let cursor_pos = getpos('.')
+      execute "%!" . a:cmd
+      if v:shell_error | undo | endif
+      call setpos('.', cursor_pos)
+    endif
+  endfunction
 
-augroup autoformat
-  au!
-  if executable("clang-format")
-    au BufWritePre *.c,*.cpp,*.h,*.hpp,*.cxx,*.hxx silent call FormatBuffer("clang-format")
-  endif
-  if executable("rustfmt -q")
-    au BufWritePre *.rs silent call FormatBuffer("rustfmt")
-  endif
-augroup END
+  augroup autoformat
+    au!
+    if executable("clang-format")
+      au BufWritePre *.c,*.cpp,*.h,*.hpp,*.cxx,*.hxx silent call FormatBuffer("clang-format")
+    endif
+    if executable("rustfmt -q")
+      au BufWritePre *.rs silent call FormatBuffer("rustfmt")
+    endif
+  augroup END
 
-" Code folding
-set nofoldenable
-function! MyFoldText()
-  let line = getline(v:foldstart)
-  let foldedlinecount = v:foldend - v:foldstart + 1
-  return ' «» '. foldedlinecount . ' ' . line
-endfunction
-set foldtext=MyFoldText()
-set fillchars=fold:\ 
+  " Code folding
+  set nofoldenable
+  function! MyFoldText()
+    let line = getline(v:foldstart)
+    let foldedlinecount = v:foldend - v:foldstart + 1
+    return ' «» '. foldedlinecount . ' ' . line
+  endfunction
+  set foldtext=MyFoldText()
+  set fillchars=fold:\ 
 
-" Debugging using Vimspector
-let g:vimspector_install_gadgets = ['CodeLLDB', 'vscode-cpptools', 'lldb-vscode']
+  " Debugging using Vimspector
+  let g:vimspector_install_gadgets = ['CodeLLDB', 'vscode-cpptools', 'lldb-vscode']
 
-nmap <leader>dd <Plug>VimspectorContinue
-nmap <leader>dx <Plug>VimspectorStop
-nmap <leader>dR <Plug>VimspectorRestart
-nmap <leader>dp <Plug>VimspectorPause
-nmap <leader>dbt <Plug>VimspectorToggleBreakpoint
-nmap <leader>dbc <Plug>VimspectorToggleConditionalBreakpoint
-nmap <leader>drc <Plug>VimspectorRunToCursor
-nmap <leader>dn <Plug>VimspectorStepOver
-nmap <leader>ds <Plug>VimspectorStepInto
-nmap <leader>du <Plug>VimspectorStepOut
-nmap <leader>di <Plug>VimspectorBalloonEval
-xmap <leader>di <Plug>VimspectorBalloonEval
+  nmap <leader>dd <Plug>VimspectorContinue
+  nmap <leader>dx <Plug>VimspectorStop
+  nmap <leader>dR <Plug>VimspectorRestart
+  nmap <leader>dp <Plug>VimspectorPause
+  nmap <leader>dbt <Plug>VimspectorToggleBreakpoint
+  nmap <leader>dbc <Plug>VimspectorToggleConditionalBreakpoint
+  nmap <leader>drc <Plug>VimspectorRunToCursor
+  nmap <leader>dn <Plug>VimspectorStepOver
+  nmap <leader>ds <Plug>VimspectorStepInto
+  nmap <leader>du <Plug>VimspectorStepOut
+  nmap <leader>di <Plug>VimspectorBalloonEval
+  xmap <leader>di <Plug>VimspectorBalloonEval
+
+endif
 
 " netrw -- if I ever need it
 let g:netrw_banner = 0
