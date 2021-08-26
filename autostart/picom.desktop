@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=picom
+Comment=X Compositor
+Exec=picom -CGb
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false

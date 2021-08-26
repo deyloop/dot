@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=dunst
+Comment=
+Exec=dbus-launch dunst --config ~/.config/dunst/dunstrc
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false

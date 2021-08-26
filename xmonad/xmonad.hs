@@ -131,7 +131,7 @@ myXmobarPP = def
   }
   where
     ppWindow :: String -> String
-    ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 65
+    ppWindow =  shorten 65
 
     blue, lowWhite, magenta, red, white, yellow :: String -> String
     magenta  = xmobarColor "#ff5faf" ""
@@ -144,30 +144,5 @@ myXmobarPP = def
 
 myStartupHook = do
   -- Important system processes
-
-  -- get auth to work with polkit-gnome
-  spawnOnce "/usr/lib/polkit-gnome/polkit-gnome/polkit-gonem-authentication-agent-1 &"
-
   -- dex to execute .desktop files in autostart.
-  spawnOnce "dex -a -s /etc/xdg/autostart/:~/.config/autostart/ &"
-
-  -- compositor
-  spawnOnce "picom -CGb &"
-
-  -- X server settings
-  spawnOnce $ "xset " ++ "-b "                      -- no bell, no heart attacks
-                      ++ "s 480 dpms 600 600 600 "  -- power saving stuff, idk     
-                      ++ "r rate 200 50 &"          -- keyboard key repeat
-
-  -- desktop notifications
-  spawnOnce "dbus-launch dunst --config ~/.config/dunst/dunstrc &"
-
-  -- keyboard and mouse settings
-  spawnOnce "setxkbmap -option \"ctrl:nocaps\" &" -- map capslock to ctrl
-  spawnOnce "xcape -e 'Shift_L=Escape' &"         -- map shift to esc
-  -- touchpad tap to click
-  spawnOnce "xinput set-prop \"$(xinput list --name-only | grep Touchpad)\" 'libinput Tapping Enabled' 1 &"
-  spawnOnce "xsetroot -cursor_name left_ptr &"    -- no cross cursor on desktop
-
-  -- system tray and icons
-  spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --transparent true --alpha 0 --padding 6 --tint 0xff1b1e22 --height 18 --distancefrom right --distance 10 &"
+  spawnOnce "dex -a -s /etc/xdg/autostart/:~/.config/autostart/"

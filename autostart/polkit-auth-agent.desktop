@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Polkit Gnome Authentication Agent
+Comment=Get Auth to work using polkit-gnome
+Exec=/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=xset
+Comment=
+Exec=xset -b s 480 dpms 600 600 600 r rate 200 50
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false

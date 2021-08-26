@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=nocaps
+Comment=Remaps the CapsLock to Ctrl
+Exec=/usr/bin/setxkbmap -option "ctrl:nocaps"
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false
+
+

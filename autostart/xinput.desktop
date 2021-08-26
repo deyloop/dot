@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=xinput
+Comment=TouchPad Tap to Click
+Exec=xinput set-prop "$(xinput list --name-only | grep Touchpad)" 'libinput Tapping Enabled' 1
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false
