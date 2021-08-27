@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 get_head() {
-  read line; printf "%s" "${line%%[[:space:]]*}"
+  read -r line; printf "%s" "${line%%[[:space:]]*}"
 }
 
 emojidb \

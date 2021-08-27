@@ -13,28 +13,28 @@ _drivesync() {
             sudo pacman -S --noconfirm rclone
         fi # add to install via other package manager like apt-get
 
-        read -p "rclone client ID (see https://rclone.org/drive/#making-your-own-client-id): " VAR_RCLONE_DRIVE_CLIENT_ID
-        read  -p "rclone client secret: " VAR_RCLONE_DRIVE_CLIENT_SECRET
+        read -pr "rclone client ID (see https://rclone.org/drive/#making-your-own-client-id): " VAR_RCLONE_DRIVE_CLIENT_ID
+        read  -pr "rclone client secret: " VAR_RCLONE_DRIVE_CLIENT_SECRET
         rclone config create private-drive drive \
             scope drive.appfolder \
 		    client_id "$VAR_RCLONE_DRIVE_CLIENT_ID" \
 		    client_secret "$VAR_RCLONE_DRIVE_CLIENT_SECRET" 
 
-        read -p "root folder id: " VAR_ROOT_FOLDER_ID
+        read -pr "root folder id: " VAR_ROOT_FOLDER_ID
         rclone config create remote-drive drive \
             scope drive \
             client_id "$VAR_RCLONE_DRIVE_CLIENT_ID" \
             client_secret "$VAR_RCLONE_DRIVE_CLIENT_SECRET" \
             root_folder_id "$VAR_ROOT_FOLDER_ID"
         
-        read -p "encryption password: " VAR_ENCRYPTION_PASSWORD
-        read -p "salting password: " VAR_SALTING_PASSWORD
+        read -pr "encryption password: " VAR_ENCRYPTION_PASSWORD
+        read -pr "salting password: " VAR_SALTING_PASSWORD
         rclone config create private-drive-encrypt crypt remote \
 		    private-drive:Private \
 		    filename_encryption "standard" \
 		    directory_name_encryption false \
-		    password $(rclone obscure $VAR_ENCRYPTION_PASSWORD) \
-		    password2 $(rclone obscure $VAR_SALTING_PASSWORD)
+		    password "$(rclone obscure "$VAR_ENCRYPTION_PASSWORD")" \
+		    password2 "$(rclone obscure "$VAR_SALTING_PASSWORD")"
 
     fi
     if ! command -v stow &> /dev/null

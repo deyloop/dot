@@ -6,7 +6,7 @@ set -e
 # - amixer
 # - dunst and dunstify
 
-: ${CHANGE_AMOUNT:=1}
+: "${CHANGE_AMOUNT:=1}"
 
 inc() {
   amixer -D pulse set Master "$1"%+
@@ -44,5 +44,5 @@ vol() {
     "Volume"
 }
 
-vol $@
+vol "$@"
 

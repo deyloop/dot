@@ -7,7 +7,7 @@ set -e
 # - dunst and dunstify
 
 # The amount to increment or decrement
-: ${CHANGE_AMOUNT:=1}
+: "${CHANGE_AMOUNT:=1}"
 
 inc() {
   xbacklight -inc "$1"%
@@ -38,4 +38,4 @@ brightness() {
     "Brightness"
 }
 
-brightness $@
+brightness "$@"

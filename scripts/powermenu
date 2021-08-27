@@ -32,7 +32,7 @@ fi
 if [[ $confirm == "Confirm" ]]; then
   case "$action" in
     power-off) systemctl poweroff ;;
-    logout) loginctl terminate-user $USER ;;
+    logout) loginctl terminate-user "$USER" ;;
     reboot) systemctl reboot ;;
     suspend) systemctl suspend ;;
     lock) ;;

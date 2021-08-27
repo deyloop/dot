@@ -9,14 +9,13 @@ set -e
 # - git
 
 # root directory where all git repos will be placed
-: ${REPOS_DIR:="$HOME/repos"} 
+: "${REPOS_DIR:="$HOME/repos"}" 
 
 clone() {
   local repo_url="$1"
 
   # example url: git@github.com:deyloop/notebox.git
   # TODO: add supposrt for urls starting with https://
-  # TODO: add url format validation support.
 
   # validate url
   local regex='^git@([-A-Za-z.]*):([-A-Za-z0-9_-]*)/([-A-Za-z0-9_]*)(.git)?$'
@@ -60,4 +59,4 @@ if [[ $# -ne 1 ]]; then
 fi
 
 
-clone $@
+clone "$@"

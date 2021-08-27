@@ -54,7 +54,8 @@
 fmttable() {
   local in=/dev/stdin
 
-  local buf="$(<"$in")"
+  local buf
+  buf="$(<"$in")"
   buf+=$'\n'
 
   local i=0
@@ -72,7 +73,7 @@ fmttable() {
 
   # print the headings
   printf "|"
-  for (( x=0; x<${totalcols}; x++ )); do
+  for (( x=0; x<totalcols; x++ )); do
     local w="${colwidths[$x]}"
     printf "%-${w}s|" "${contents[$x]}"
   done
@@ -84,17 +85,17 @@ fmttable() {
     local con
     case ${colaligns[$x]} in
       left) 
-        con=":$(for ((i=0; i<$[${colwidths[$x]}-1]; i++)); do 
+        con=":$(for ((i=0; i<$((${colwidths[$x]}-1)); i++)); do 
           printf "-"; 
         done)"
         ;;
       right)
-        con="$(for ((i=0; i<$[${colwidths[$x]}-1]; i++)); do 
+        con="$(for ((i=0; i<$((${colwidths[$x]}-1)); i++)); do 
           printf "-"; 
         done):"
         ;;
       center)
-        con=":$(for ((i=0; i<$[${colwidths[$x]}-2]; i++)); do 
+        con=":$(for ((i=0; i<$((${colwidths[$x]}-2)); i++)); do 
           printf "-"; 
         done):"
         ;;
@@ -110,9 +111,9 @@ fmttable() {
   printf "\n"
 
   # print the body
-  for (( y=2; y<${row}; y++ )); do
+  for (( y=2; y<row; y++ )); do
     printf "|"
-    for (( x=0; x<${totalcols}; x++ )); do
+    for (( x=0; x<totalcols; x++ )); do
       local w="${colwidths[$x]}"
       local a=""
       [[ ${colaligns[$x]} != right ]] && a="-" 
@@ -148,7 +149,7 @@ _parse_headingrow(){
   _parse_newline
 
   totalcols=$col
-  row=$[row+1]
+  row=$((row+1))
 }
 
 _advance_col() {
@@ -163,7 +164,7 @@ _advance_col() {
   local w="${colwidths[$col]}"
   if [[ $colw -gt $w ]]; then colwidths[$col]="$colw"; fi
 
-  col=$[col+1]
+  col=$((col+1))
 }
 
 _parse_headings() {
@@ -233,12 +234,12 @@ _parse_delimrow(){
 
   _parse_newline
 
-  row=$[row+1]
+  row=$((row+1))
 }
 
 _parse_delims() {
   _parse_delim
-  col=$[col+1]
+  col=$((col+1))
 
   _parse_pipe
 
@@ -247,7 +248,7 @@ _parse_delims() {
 
 _parse_delimsB() {
   _parse_delim
-  col=$[col+1]
+  col=$((col+1))
 
   _nextchar
   if [[ $c = '|' ]]; then
@@ -296,7 +297,11 @@ _parse_delim() {
 
 _parse_skipspaces() {
   _nextchar
-  [[ $c = ' ' ]] && _parse_skipspaces || _putback
+  if [[ $c = ' ' ]]; then
+    _parse_skipspaces 
+  else
+    _putback
+  fi
 }
 
 _parse_noalign() {
@@ -354,7 +359,7 @@ _parse_colon() {
 }
 
 _parse_tablebody(){
-  local bi=$[${#buf}-1]
+  local bi=$((${#buf}-1))
   if [[ $i -lt $bi ]]; then
     _parse_tablerow
     _parse_tablebody
@@ -373,7 +378,7 @@ _parse_tablerow() {
   _nextchar
   [[ $c != '|' ]] && _putback
 
-  row=$[row+1]
+  row=$((row+1))
   _parse_newline
 }
 
@@ -411,14 +416,14 @@ _parse_bodyB() {
 _nextchar() {
   if [[ $i -lt "${#buf}" ]]; then
     c="${buf:$i:1}"
-    i=$[i+1]
+    i=$((i+1))
   else
     __fail "Unexpectedly reached EOF"
   fi
 }
 
 _putback() {
-  i=$[i-1]
+  i=$((i-1))
 }
 
 fmttable

@@ -3,7 +3,8 @@ set -e
 
 # query emoji 
 
-: ${XDG_DATA_HOME:="$HOME/.local/share"}
+: "${XDG_DATA_HOME:="$HOME/.local/share"}"
+
 EMOJI_DATA_DIR="$XDG_DATA_HOME/emojidb"
 EMOJI_DATA_JSON="$EMOJI_DATA_DIR/emoji.json"
 
@@ -17,7 +18,7 @@ if [[ ! -f $EMOJI_DATA_JSON ]]; then
 fi
 
 strip_quotes() {
-  while IFS= read line; do
+  while IFS= read -r line; do
     line="${line#\"}"
     line="${line%\"}"
     echo "$line"

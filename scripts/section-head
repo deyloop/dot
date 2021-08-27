@@ -8,7 +8,7 @@
 #-------------------------Environment Variables-------------------------
 
 # The width of the screen, to fill with padding
-: ${PAD_SCREEN_WIDTH:=72}
+: "${PAD_SCREEN_WIDTH:=72}"
 
 
 #--------------------------Function definitions-------------------------
@@ -17,15 +17,16 @@ section-head(){
   local pad_char="-"
   [[ -n "$1" ]] && pad_char="${1:0:1}"
 
-  read text
+  read -r text
 
-  local padding="$(
+  local padding
+  padding="$(
     for i in $(seq 0 $PAD_SCREEN_WIDTH); do 
-      printf "$pad_char"; 
+      printf "%s" "$pad_char"; 
     done)" 
 
   local text_len=${#text}
-  local start_i=$(( ($PAD_SCREEN_WIDTH - $text_len)/2 ))
+  local start_i=$(( (PAD_SCREEN_WIDTH - text_len)/2 ))
   printf "%s%s%s\n" "${padding:0:$start_i}" "$text" "${padding:0:$start_i}"
 
 }
