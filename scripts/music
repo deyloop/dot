@@ -1,0 +1,105 @@
+#!/usr/bin/bash
+set -e
+
+: "${XDG_DATA_HOME:="$HOME/.local/share"}"
+
+# Starts playing music from a youtube stream inside a tmux session
+# Depends on
+# - tmux
+# - mpv
+
+STREAM_LIST="$XDG_DATA_HOME/cmd-music/streams-list"
+
+_stop_stream() {
+  # attempt to stop the music if its playing
+  if tmux has-session -t music &>/dev/null ; then
+    # Stop the music first
+    tmux send-keys -t music.0 "q"
+
+    tmux kill-session -t music
+  fi
+
+}
+
+_play_stream() {
+  local url
+  url="$1"
+  
+  if [[ -n $url ]]; then
+    # if music session already exists, get rid of it
+    _stop_stream
+
+    # start a new session and start playing the stream
+    tmux new-session -ds music bash
+
+    tmux send-keys -t music.0 "mpv --no-video $url" ENTER
+  fi
+}
+
+
+_play(){
+  local stream_search_term
+  stream_search_term="$@"
+
+  # We take the music from a file in XDG_DATA_HOME/cmd-music/streams.lst
+  if [[ -f $STREAM_LIST ]]; then
+    local stream
+    stream="$(grep -i "${stream_search_term//\ /\.\*}" "$STREAM_LIST" | shuf | head -1)"
+    
+    if [[ -z $stream ]]; then
+      echo "No stream found" >&2
+      return 1
+    fi
+
+    if [[ $stream =~ ^(\".*\")[[:space:]]*(.*)$ ]]; then
+      local stream_name="${BASH_REMATCH[1]}"
+      local stream_url="${BASH_REMATCH[2]}"
+      
+      _play_stream "$stream_url"
+
+      echo "Playing $stream_name"
+    else 
+      return 2
+    fi
+  fi
+}
+
+_list(){
+  while IFS= read -r line; do
+    echo "${line% *}"
+  done <"$STREAM_LIST"
+}
+
+_edit() {
+  exec ${EDITOR:-vim} "$STREAM_LIST"
+}
+
+_music() {
+  # Don't do anyting if tmux is not installed
+  if ! { command -v tmux &>/dev/null && command -v mpv &>/dev/null; }; then
+    echo "TMUX and MPV must be installed" >&2
+    return 1
+  fi
+
+  local cmd
+  if [[ -n "$1" ]]; then
+    cmd="$1"; shift
+  fi
+  case "$cmd" in
+    ""|play) _play "$@" ;;
+    stop) _stop_stream ;;
+    edit) _edit ;;
+    list) _list ;;
+    help|*) 
+      echo "USAGE:"
+      echo "music"
+      echo "music play [stream_name]"
+      echo "music stop"
+      echo "music edit"
+      echo "music list"
+      return 3
+      ;;
+  esac
+}
+
+_music "$@"
