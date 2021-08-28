@@ -63,6 +63,7 @@ myKeys =
   , ("M-z d", spawn "rofi -show drun")
   , ("M-z z", spawn "rofi -show run")
   , ("M-z w", spawn "rofi -show window")
+  , ("M-c"  , spawn "dunstctl context")   -- dunst context menu
 
   -- window management
   , ("M-q", kill)
