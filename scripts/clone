@@ -27,15 +27,9 @@ clone() {
   # extract the host, username and reponame
   local _url host reponame username
 
-  _url=${repo_url#git@}
-  _url=${_url%\.git}
-  host=${_url%%:*}
-
-  reponame=${_url##*/}
-
-  username=${_url##*:}
-  username=${username%%/*}
-
+  host="${BASH_REMATCH[1]}"
+  username="${BASH_REMATCH[2]}"
+  reponame="${BASH_REMATCH[3]}"
 
   local clone_path="$REPOS_DIR/$host/$username/$reponame"
 
