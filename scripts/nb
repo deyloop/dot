@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+: "${GITHUB_USER:="$USER"}"
+: "${REPOS_DIR:="$HOME/repos"}"
+: "${NOTEBOX_ROOT_DIR:="$REPOS_DIR/github.com/$GITHUB_USER/notebox"}"
+
+nb_create() {
+  local title note_dir
+  title="$@"
+
+  note_dir="$NOTEBOX_ROOT_DIR/$(isosec)"
+  mkdir -p "$note_dir"
+
+  echo "# $title" >> "$note_dir/README.md"
+  exec $EDITOR "$note_dir/README.md"
+}
+
+_nb(){
+  local cmd
+  if [[ -n "$1" ]]; then
+    cmd="$1"; shift
+  fi
+
+  case "$cmd" in
+    create) nb_create "$@" ;;
+    "" | * ) return 1 ;;
+  esac
+}
+
+_nb "$@"
