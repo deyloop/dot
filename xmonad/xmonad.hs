@@ -98,6 +98,7 @@ myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
   [ className =? "Pavucontrol" --> doFloat
   , className =? "feh" --> doFloat 
+  , title =? "Picture-in-Picture" --> doFloat
   ]
 
 myLayout = tiled ||| tabs ||| threeCol
