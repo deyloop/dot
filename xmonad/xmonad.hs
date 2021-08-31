@@ -99,6 +99,7 @@ myManageHook = composeAll
   [ className =? "Pavucontrol" --> doFloat
   , className =? "feh" --> doFloat 
   , title =? "Picture-in-Picture" --> doFloat
+  , className =? "Blueman-manager" --> doFloat
   ]
 
 myLayout = tiled ||| tabs ||| threeCol
