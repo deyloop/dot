@@ -6,13 +6,20 @@
 
 nb_create() {
   local title note_dir
-  title="$@"
+  title="$*"
 
   note_dir="$NOTEBOX_ROOT_DIR/$(isosec)"
   mkdir -p "$note_dir"
 
   echo "# $title" >> "$note_dir/README.md"
-  exec $EDITOR "$note_dir/README.md"
+  command $EDITOR "$note_dir/README.md"
+
+  if [[ -z $title ]]; then return; fi
+
+  read -rp "Commit? " ans
+  if [[ $ans =~ [Yy].* ]]; then
+    cd "$NOTEBOX_ROOT_DIR" && git add "$note_dir" && git commit -m "$title"
+  fi
 }
 
 _nb(){
