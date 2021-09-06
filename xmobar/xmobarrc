@@ -53,7 +53,6 @@ Config
           , "-C", "#d7875f" -- color when not muted
           ] 10
       , Run Com "/home/deyloop/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 10
-      , Run Com "/home/deyloop/.local/bin/scripts/istdate" [] "ist" 600
       , Run Com "/home/deyloop/.local/bin/pomo" [] "pomo" 10
       , Run UnsafeStdinReader
      ]
@@ -81,7 +80,7 @@ Config
                     \<fc=#d7875f>%default:Master%</fc>\
                   \</action>\
                 \ <fc=#585858>|</fc> \
-                \<fc=#af87d7>%date% | %ist%</fc>\
+                \<fc=#af87d7>%date%</fc>\
                 \ <fc=#585858>|</fc> \
                 \%trayerpad% :"
   }
