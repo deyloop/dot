@@ -39,7 +39,7 @@ Config
           , "--lows" , "<fn=1>\xf243</fn>"  -- when low
           ] 10
       , Run Date "<fn=1>\xf017</fn> %a %F %H:%M:%S" "date" 10
-      , Run Volume "default" "Master" 
+      , Run Alsa "default" "Master" 
           [ "-t", "<status> <volume>"
           , "--"
           , "-H", "66"
@@ -51,7 +51,7 @@ Config
           , "-h", "<fn=1>\xf028</fn>" -- high
           , "-c", "#585858" -- color when muted
           , "-C", "#d7875f" -- color when not muted
-          ] 10
+          ]
       , Run Com "/home/deyloop/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 10
       , Run Com "/home/deyloop/.local/bin/pomo" [] "pomo" 10
       , Run UnsafeStdinReader
@@ -77,10 +77,12 @@ Config
                     \<fc=#5fafd7>%battery%</fc>\
                 \ <fc=#585858>|</fc> \
                   \<action=`pavucontrol`>\
-                    \<fc=#d7875f>%default:Master%</fc>\
+                    \<fc=#d7875f>%alsa:default:Master%</fc>\
                   \</action>\
                 \ <fc=#585858>|</fc> \
                 \<fc=#af87d7>%date%</fc>\
                 \ <fc=#585858>|</fc> \
                 \%trayerpad% :"
   }
+
+-- vim: ft=config
