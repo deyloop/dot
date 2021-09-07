@@ -162,9 +162,19 @@ if !empty(glob(plug_path))
 
   colorscheme PaperColor
 
+  " status line settings
+
   set laststatus=2
   let g:lightline = {
-        \ 'colorscheme' : 'PaperColor',
+        \ 'colorscheme' : 'one',
+        \ 'active': {
+          \ 'left': [ [ 'mode', 'paste' ],
+          \           [ 'readonly', 'filename', 'modified'],
+          \           [ 'lsc' ] ],
+          \},
+        \ 'component_function': {
+          \ 'lsc': 'LightlineLSCStatus' 
+          \},
         \ 'mode_map': {
           \ 'n' : 'N',
           \ 'i' : 'I',
@@ -177,8 +187,13 @@ if !empty(glob(plug_path))
           \ 'S' : 'SL',
           \ "\<C-s>": 'SB',
           \ 't': 'T',
-          \ },
-          \ }
+          \},
+        \}
+
+  function! LightlineLSCStatus()
+    let status = LSCServerStatus()
+    return status !=# '' ? ' :'.status : ''
+  endfunction
 
   set noshowmode
 
@@ -186,8 +201,11 @@ if !empty(glob(plug_path))
   let pandoc#formatting#textwidth = 72
 
   " Language support (LSP) via vim-lsc
+
   let g:lsc_server_commands = {
-        \ 'rust': 'rust-analyzer',
+        \ 'rust': {
+          \ 'command': 'rust-analyzer'
+          \} ,
         \ 'cpp': {
           \ 'command': 'clangd --background-index',
           \ 'suppress_stderr': v:true
@@ -200,6 +218,7 @@ if !empty(glob(plug_path))
           \ 'suppress_stderr': v:true
           \ },
         \}
+
 
   let g:lsc_auto_map = {
         \ 'GoToDefinition': 'gd',
