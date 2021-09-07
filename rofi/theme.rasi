@@ -79,7 +79,7 @@ button selected {
 }
 inputbar {
     padding:          4px ;
-    background-color: var(lightblack);
+    background-color: var(dark);
     text-color:       var(lightgreen);
     border:           0px 0px 2px ;
 }

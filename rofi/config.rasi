@@ -11,6 +11,10 @@ configuration {
   terminal: "alacritty";
   
   matching: "regex";
+
+  drun {
+    display-name: "Apps: ";
+  }
 }
 
 // vim: ft=config
