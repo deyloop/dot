@@ -6,18 +6,70 @@ set -e
 # depends on:
 # - scrot
 # - dunst / dunstify
+# - rofi
 
-type scrot &>/dev/null || exit
+type scrot &>/dev/null || exit 1
+type rofi &>/dev/null || exit 1
 
-PICSFOLDER=$(xdg-user-dir PICTURES)/screenshots/
-[[ -d $PICSFOLDER ]] || mkdir -p "$PICSFOLDER"
+_screenshot_notification(){
+  local path
+  path="$1"
 
-filename="$(date +"%Y-%m-%d%H%M%S.png")"
-path="${PICSFOLDER}${filename}"
+  option=$(dunstify -A 'view,View Image' -I "$path" "Screenshot" "Saved to ${path}")
+  if [[ $option == view ]]; then
+    xdg-open "$path"
+  fi
+}
 
-scrot "$path"
+_screenshot_full(){
+  local path
+  path="$1"
 
-option=$(dunstify -A 'view,View Image' -I "$path" "Screenshot" "Saved to ${path}")
-if [[ $option == view ]]; then
-  xdg-open "$path"
-fi
+  scrot "$path"
+  _screenshot_notification "$path"
+}
+
+_screenshot_select(){
+  local path
+  path="$1"
+
+  sleep 1 # wait for the menu, if there , to fade away
+
+  scrot -sf "$path"
+  _screenshot_notification "$path"
+}
+
+_screenshot_options() {
+  local action
+  action=$( echo -e 'Capture Full Screen\nSelect Part of Screen' \
+                  | rofi -dmenu -p 'Take Screenshot: ')
+
+  declare -A actionmap=(\
+    ["Capture Full Screen"]="full" \
+    ["Select Part of Screen"]="select" \
+  )
+  action="${actionmap[$action]}"
+  
+  _screenshot "$action"
+}
+
+_screenshot() {
+  PICSFOLDER=$(xdg-user-dir PICTURES)/screenshots/
+  [[ -d $PICSFOLDER ]] || mkdir -p "$PICSFOLDER"
+
+  local filename path
+
+  filename="$(date +"%Y-%m-%d%H%M%S.png")"
+  path="${PICSFOLDER}${filename}"
+
+  local cmd
+  cmd="$1"
+
+  case "$cmd" in 
+    full) _screenshot_full "$path" ;;
+    select) _screenshot_select "$path" ;;
+    *) _screenshot_options ;;
+  esac
+}
+
+_screenshot "$@"

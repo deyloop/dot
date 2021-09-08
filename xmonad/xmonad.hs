@@ -80,7 +80,9 @@ myKeys =
   , ("S-<XF86MonBrightnessDown>", spawn "~/.local/bin/scripts/brightness down")
 
   -- screenshot
-  , ("<Print>", spawn "~/.local/bin/scripts/screenshot")
+  , ("<Print>", spawn "~/.local/bin/scripts/screenshot full")
+  , ("M-<Print>", spawn "~/.local/bin/scripts/screenshot")
+
   
   -- restart in place
   , ("M-r", spawn "xmonad --recompile; killall xmobar; xmonad --restart")
