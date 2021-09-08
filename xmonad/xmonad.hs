@@ -56,7 +56,7 @@ myKeys =
   -- application shortcuts
   [ ("M-w"        , spawn "firefox &")
   , ("M-f"        , spawn "thunar &")
-  , ("M-<Return>" , spawn $ myTerminal ++ " -e tmux new &")
+  , ("M-<Return>" , spawn $ myTerminal ++ " -e tmux new -As 'base' &")
   , ("M-S-p"      , spawn "~/.local/bin/scripts/pscircle-draw")
 
   -- rofi menus
