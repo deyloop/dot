@@ -42,7 +42,7 @@ _screenshot_select(){
 _screenshot_options() {
   local action
   action=$( echo -e 'Capture Full Screen\nSelect Part of Screen' \
-                  | rofi -dmenu -p 'Take Screenshot: ')
+          | rofi -dmenu -p 'Take Screenshot: ')
 
   declare -A actionmap=(\
     ["Capture Full Screen"]="full" \
