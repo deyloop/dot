@@ -7,15 +7,7 @@ set -e
 
 EMOJI_DATA_DIR="$XDG_DATA_HOME/emojidb"
 EMOJI_DATA_JSON="$EMOJI_DATA_DIR/emoji.json"
-
-if [[ ! -f $EMOJI_DATA_JSON ]]; then
-  mkdir -p "$EMOJI_DATA_DIR"
-
-  # download the json file
-  echo "Downloading Emoji Database" >&2
-  wget "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json" -P "$EMOJI_DATA_DIR"
-  echo "Emoji Database Downloaded" >&2
-fi
+EMOJI_DATA_LIST="$EMOJI_DATA_DIR/emojilist"
 
 strip_quotes() {
   while IFS= read -r line; do
@@ -25,8 +17,30 @@ strip_quotes() {
   done
 }
 
+process_printall() {
+  jq '.[] | .emoji + " " + ((.aliases + .tags) | join(" ")) ' "$EMOJI_DATA_JSON" \
+  | strip_quotes
+}
+
+if [[ ! -f "$EMOJI_DATA_LIST" ]]; then
+  mkdir -p "$EMOJI_DATA_DIR"
+
+  # download the json file
+  echo "Downloading Emoji Database" >&2
+  wget "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json" -P "$EMOJI_DATA_DIR"
+  echo "Emoji Database Downloaded" >&2
+
+  echo "Processing Emoji Database" >&2
+  emojilist="$(mktemp)"
+  process_printall >"$emojilist"
+  mv "$emojilist" "$EMOJI_DATA_LIST"
+  rm "$EMOJI_DATA_JSON"
+  echo "Processing Done" >&2
+
+fi
+
 printall() {
-  jq '.[] |  .emoji + " " + .aliases[]' "$EMOJI_DATA_JSON" | strip_quotes
+  echo "$(<"$EMOJI_DATA_LIST")"
 }
 
 search_term="$1"
