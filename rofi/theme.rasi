@@ -84,7 +84,7 @@ inputbar {
     border:           0px 0px 2px ;
 }
 mainbox {
-    background-color: rgba ( 27, 30, 33, 100 % );
+    background-color: rgba ( 19, 21, 23, 100 % );
     expand:           true;
     spacing:          1.0000em ;
 }

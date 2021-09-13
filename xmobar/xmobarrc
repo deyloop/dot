@@ -7,7 +7,7 @@ Config
   , additionalFonts = 
       [ "xft:Font Awesome 5 Free Solid:pixelsize=12"
       ]
-  , bgColor = "#1b1e21"
+  , bgColor = "#131517"
   , fgColor = "grey"
   , position = TopW L 100
   , commands = 

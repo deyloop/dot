@@ -1,4 +1,4 @@
-" XDG support
+"------------------------------XDG support------------------------------
 if empty($MYVIMRC) | let $MYVIMRC = expand('<sfile>:p') | endif
 
 " If $VIMXDG is defined, that is an indication to, that will be used as an
@@ -27,7 +27,6 @@ if !empty($VIMXDG)
   " Neovim has its own special location
   if !has('nvim') 
     set viminfofile=$XDG_CACHE_HOME/vim/viminfo
-
   endif
 endif
 
@@ -51,18 +50,33 @@ fun! VimStdPath(what)
     return result
 endfun
 
-" Config Options
+"-----------------------------Config Options----------------------------
 set nocompatible
 
 let mapleader = " "
 
+" enable syntax and plugins (for netrw, if we ever need it)
 syntax on
+filetype plugin indent on
+
 set mouse=a
 
 set encoding=utf-8
 set fileencodings=utf-8
-filetype plugin indent on
 
+" enable fuzzy file finder
+set path+=**          " enable fuzzy file search
+set wildmenu          " enable fuzzy menu
+set wildignore+=**/.git/**
+set wildignore+=**/__pychache__/**
+set wildignore+=**/venv/**
+set wildignore+=**/node_modules/**
+set wildignore+=**/dist/**.**/build/**
+set wildignore+=*.o
+set wildignore+=*.pyc
+set wildignore+=*swp
+
+" tabs, spaces, indenting
 set nowrap
 set autoindent
 set smartindent
@@ -71,25 +85,29 @@ set expandtab
 set smarttab
 set shiftwidth=2
 set softtabstop=2
+set backspace=indent,eol,start
+set textwidth=72
+
+" make vim behave 
 set noswapfile
 set nobackup
-set backspace=indent,eol,start
 set splitbelow
+
 set cursorline
 set colorcolumn=80
-set clipboard=unnamedplus
-set incsearch
+
+set incsearch 
+set hlsearch 
 set showcmd
-"set textwidth=72
 set shortmess=aoOtTI
+set clipboard=unnamedplus
 
 set matchpairs+=<:>   " Use % to jump between html tags as well
-set path=$PWD/**      " enable fuzzy file search
-set wildmenu          " enable fuzzy menu
-set wildignore+=**/.git/**,**/__pychache__/**,**/venv/**,**/node_modules/**,**/dist/**.**/build/**,*.o,*.pyc,*swp
 set hidden
 
-set viminfo='10,\"100,:20,%,n~/.viminfo
+" saves the current cursor position, so that we can get back where we
+" left off
+set viminfo='10,\"100,:20,%
 augroup restoreline
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
@@ -97,12 +115,26 @@ augroup END
 " Fast rendering
 set ttyfast
 
+"------------------------Personal Key-bindings--------------------------
+
 " Toggle Whitespace character rendering
 nnoremap <leader>tl :set list!<CR>
 set listchars=tab:>·,trail:~,extends:>,precedes:<,space:·,eol:↩
 
+" reloads vimrc
 nnoremap <F5> :source $MYVIMRC<CR>
 
+" Increment and decrement numbers using arrow keys
+nnoremap <Up> <C-a>
+nnoremap <Down> <C-x>
+
+" Consistent with D and C
+nnoremap Y y$ 
+
+" remove search highlighting
+nnoremap <esc><esc> :silent! nohls<cr>
+
+"--------------------------------Plugins--------------------------------
 let data_dir = VimStdPath('data')
 let plug_path = data_dir . '/autoload/plug.vim'
 
@@ -142,7 +174,7 @@ if !empty(glob(plug_path))
   call plug#end()
 
   " ColorScheme Settings
-  if exists('+termguicolors') && ($TERM == "xterm-256color" || $TERM == "tmux-256color" || $TERM == 'alacritty' || $TERM == 'xterm-kitty')
+  if exists('+termguicolors') && ($TERM == "xterm-256color" || $TERM == "tmux-256color" || $TERM == 'alacritty')
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     set termguicolors
@@ -154,7 +186,7 @@ if !empty(glob(plug_path))
         \ 'theme': {
           \ 'default.dark': {
             \ 'override' : {
-              \ 'color00' : ['#1B1E21', ''],
+              \ 'color00' : ['#131517', ''],
             \ }
           \ }
         \ }
@@ -163,7 +195,6 @@ if !empty(glob(plug_path))
   colorscheme PaperColor
 
   " status line settings
-
   set laststatus=2
   let g:lightline = {
         \ 'colorscheme' : 'one',
@@ -287,12 +318,10 @@ if !empty(glob(plug_path))
 
 endif
 
-" netrw -- if I ever need it
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_altv = 1
+"----------------------NETRW -- if I ever need it-----------------------
+let g:netrw_banner = 0        " disable the banner
+let g:netrw_liststyle = 3     " tree view
+let g:netrw_altv = 1          " open splits to the right
+let g:netrw_browse_split = 4  " open in prior window
 let g:netrw_winsize = 25
 
-" Increment and decrement numbers using arrow keys
-nnoremap <Up> <C-a>
-nnoremap <Down> <C-x>
