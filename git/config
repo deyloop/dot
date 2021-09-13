@@ -1,5 +1,6 @@
 [user]
 	email = me.deyloop@gmail.com
 	name = Anurup Dey
+	signingkey = 987EECD68CCEBB9A
 [init]
 	defaultBranch = main
