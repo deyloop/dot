@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+# creates a new tmux session and switches to it.
+
+tmux new-session -d -s "$1"
+tmux switch -t "$1"

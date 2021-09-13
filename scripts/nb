@@ -22,14 +22,22 @@ nb_create() {
   fi
 }
 
+nb_search() {
+  cd "$NOTEBOX_ROOT_DIR"
+  git grep -ir "${@//\ /\.\*}"
+}
+
 _nb(){
   local cmd
   if [[ -n "$1" ]]; then
     cmd="$1"; shift
   fi
 
+  # TODO: `last` command: prints the last note folder created.
+  # TODO: `grep` command: does a grep on the whole notebox
   case "$cmd" in
     create) nb_create "$@" ;;
+    search) nb_search "$@" ;;
     "" | * ) return 1 ;;
   esac
 }

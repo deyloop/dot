@@ -2,5 +2,5 @@
 
 cdl () {
   cd "$@" || return
-  ls -la --color='auto' --group-directories-first
+  ls -a --color='auto' --group-directories-first
 }
