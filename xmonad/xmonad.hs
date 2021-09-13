@@ -9,15 +9,23 @@ import XMonad.Util.Loggers
 import XMonad.Util.SpawnOnce
 
 -- Hooks
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.Place
 
 -- Layouts
+import XMonad.Layout.Renamed
+import XMonad.Layout.WindowNavigation
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Tabbed
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Column
 
 -- Actions
 import XMonad.Actions.WithAll
+import XMonad.Actions.FloatKeys
 
 import Data.Maybe
 import Data.Monoid
@@ -68,6 +76,28 @@ myKeys =
   -- window management
   , ("M-q", kill)
 
+  -- window movement
+  , ("M-l", sendMessage $ Go R)
+  , ("M-h", sendMessage $ Go L)
+  , ("M-k", sendMessage $ Go U)
+  , ("M-j", sendMessage $ Go D)
+  -- moving windows
+  , ("M-C-l", sendMessage $ Swap R)
+  , ("M-C-h", sendMessage $ Swap L)
+  , ("M-C-k", sendMessage $ Swap U)
+  , ("M-C-j", sendMessage $ Swap D)
+  -- manage floating windows
+  -- move around
+  , ("M-C-S-h", withFocused (keysMoveWindow (-10,0)))
+  , ("M-C-S-l", withFocused (keysMoveWindow (10,0)))
+  , ("M-C-S-k", withFocused (keysMoveWindow (0,-10)))
+  , ("M-C-S-j", withFocused (keysMoveWindow (0,10)))
+  -- resize
+  , ("M-C-S-<Right>", withFocused (keysResizeWindow (10,0) (0,0)))
+  , ("M-C-S-<Left>", withFocused (keysResizeWindow (-10,0) (0,0)))
+  , ("M-C-S-<Up>", withFocused (keysResizeWindow (0,-10) (0,0)))
+  , ("M-C-S-<Down>", withFocused (keysResizeWindow (0,10) (0,0)))
+
   -- volume controls
   , ("<XF86AudioMute>"        , spawn "~/.local/bin/scripts/vol mute")
   , ("<XF86AudioLowerVolume>" , spawn "~/.local/bin/scripts/vol down")
@@ -98,20 +128,33 @@ myKeys =
 
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-  [ className =? "Pavucontrol" --> doFloat
-  , className =? "feh" --> doFloat 
-  , title =? "Picture-in-Picture" --> doFloat
-  , className =? "Blueman-manager" --> doFloat
+  [ className =? "Pavucontrol"        --> doCenterFloat
+  , className =? "feh"                --> doFloat 
+  , title     =? "Picture-in-Picture" --> doFloat
+  , className =? "Blueman-manager"    --> doFloat
+  , className =? "Xmessage"           --> doCenterFloat
+  , isFullscreen                      --> doFullFloat
+  , isDialog                            --> doFloat
   ]
 
-myLayout = tiled ||| tabs ||| threeCol
+myLayout = avoidStruts . smartBorders .windowNavigation $ cols ||| tiled ||| tabs ||| zen
   where
-    threeCol  = ThreeColMid nmaster delta ratio
-    tiled     = Tall nmaster delta ratio
-    tabs      = tabbedBottom shrinkText myTabTheme
+    zen       = renamed [ Replace "zen" ] 
+                $ Full
+
+    cols      = renamed [ Replace "col" ] 
+                $ Mirror 
+                $ Column colsRatio
+    colsRatio = 1.0
+
+    tiled     = renamed [ Replace "tiled"] 
+                $ Tall nmaster delta ratio
     nmaster   = 1
     ratio     = 1/2
     delta     = 3/100
+
+    tabs      = renamed [ Replace "tabs" ]
+                $ tabbedBottom shrinkText myTabTheme
 
 -- setting colors for tabs layout and tabs sublayout.
 myTabTheme = def { fontName            = "xft:Hack:size=9"
