@@ -32,7 +32,7 @@ nb_title() {
   local id
   id="$1"
   
-  local title="$(head -1 "$id/README.md")"
+  local title="$(head -1 "$NOTEBOX_ROOT_DIR/$id/README.md")"
   echo "${title### }"
 }
 
