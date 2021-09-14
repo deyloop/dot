@@ -3,6 +3,7 @@
 : "${GITHUB_USER:="$USER"}"
 : "${REPOS_DIR:="$HOME/repos"}"
 : "${NOTEBOX_ROOT_DIR:="$REPOS_DIR/github.com/$GITHUB_USER/notebox"}"
+: "${EDITOR:=vim}"
 
 nb_create() {
   local title note_dir
@@ -27,17 +28,70 @@ nb_search() {
   git grep -ir "${@//\ /\.\*}"
 }
 
+nb_title() {
+  local id
+  id="$1"
+  
+  local title="$(head -1 "$id/README.md")"
+  echo "${title### }"
+}
+
+nb_list() {
+  for dir in $(nb_list_ids); do
+    printf "[%s] %s\n" "$dir" "$(nb_title "$dir")"
+  done
+}
+
+nb_list_ids() {
+  cd "$NOTEBOX_ROOT_DIR"
+  local list=$(ls -1 -d */)
+  list="${list//\//}"
+  echo "$list"
+}
+
+nb_last() {
+  nb_list_ids | tail -1
+}
+
+nb_open() {
+  local id
+  id="$1"
+  
+  [[ "$id" = "last" ]] && id="$(nb_last)"
+  command $EDITOR "$NOTEBOX_ROOT_DIR/$id/README.md"
+
+}
+
+nb_edit() {
+  local id
+  id="$1"
+
+  [[ "$id" = "last" ]] && id="$(nb_last)"
+  
+  nb_open "$id"
+
+  read -rp "Commit? " ans
+  if [[ $ans =~ [Yy].* ]]; then
+    cd "$NOTEBOX_ROOT_DIR" && \
+    git add "$id" && \
+    git commit -m "$(nb_title "$id")"
+  fi
+}
+
 _nb(){
   local cmd
   if [[ -n "$1" ]]; then
     cmd="$1"; shift
   fi
 
-  # TODO: `last` command: prints the last note folder created.
-  # TODO: `grep` command: does a grep on the whole notebox
   case "$cmd" in
     create) nb_create "$@" ;;
     search) nb_search "$@" ;;
+    title) nb_title "$1" ;;
+    list) nb_list ;;
+    last) nb_last ;;
+    open) nb_open "$1" ;;
+    edit) nb_edit "$1" ;;
     "" | * ) return 1 ;;
   esac
 }
