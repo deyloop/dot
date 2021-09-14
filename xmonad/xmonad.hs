@@ -39,7 +39,7 @@ main = xmonad . ewmh
     toggleStrutsKey XConfig{ modMask = m } = (m, xK_b)
 
 myTerminal = "alacritty"
-myWorkSpaces = ["work","extra","relax","4","5","6","7","8","aside"]
+myWorkSpaces = ["\xf121","\xf0b1","\xf11b","4","5","6","7","8","\xf2d2"]
 myWorkspaceIndices =  M.fromList $ zipWith (,) myWorkSpaces [1..]
 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
@@ -63,7 +63,7 @@ myConfig = def
 myKeys =
   -- application shortcuts
   [ ("M-w"        , spawn "firefox &")
-  , ("M-f"        , spawn "thunar &")
+  , ("M-f"        , spawn "pcmanfm &")
   , ("M-<Return>" , spawn $ myTerminal ++ " -e tmux new -As 'base' &")
   , ("M-S-p"      , spawn "~/.local/bin/scripts/pscircle-draw")
 
@@ -130,6 +130,7 @@ myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
   [ className =? "Pavucontrol"        --> doCenterFloat
   , className =? "feh"                --> doFloat 
+  , className =? "Gcolor3"            --> doCenterFloat 
   , title     =? "Picture-in-Picture" --> doFloat
   , className =? "Blueman-manager"    --> doFloat
   , className =? "Xmessage"           --> doCenterFloat
@@ -172,8 +173,8 @@ myXmobarPP = def
   , ppTitle             = green . ppWindow
   , ppLayout            = lowWhite
   , ppCurrent           = wrap (blue "[") (blue "]") . yellow
-  , ppHidden            = white . wrap " " "" . clickable
-  , ppHiddenNoWindows   = lowWhite . wrap " " "" . clickable
+  , ppHidden            = white . wrap " " " " . clickable
+  , ppHiddenNoWindows   = lowWhite . wrap " " " " . clickable
   , ppUrgent            = red . wrap (yellow "!") (yellow "!")
   , ppOrder             = \[ws, l, t]-> [ws, l, t]
   }
