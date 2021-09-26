@@ -151,6 +151,9 @@ if !empty(glob(plug_path))
   " Plugins
   call plug#begin('~/.local/share/vim/plugins')
 
+    " TMUX integration
+    Plug 'christoomey/vim-tmux-navigator'
+
     " Language Server support
     Plug 'natebosch/vim-lsc'
 
@@ -172,6 +175,18 @@ if !empty(glob(plug_path))
     Plug 'vim-pandoc/vim-pandoc-syntax'   
 
   call plug#end()
+
+  " TMUX navigation settings
+  let g:tmux_navigator_save_on_switch = 2
+  let g:tmux_navigator_disable_when_zoomed = 1
+
+  let g:tmux_navigator_no_mappings = 1
+  
+  nnoremap <silent> <c-a>h :TmuxNavigateLeft<cr>
+  nnoremap <silent> <c-a>j :TmuxNavigateDown<cr>
+  nnoremap <silent> <c-a>k :TmuxNavigateUp<cr>
+  nnoremap <silent> <c-a>l :TmuxNavigateRight<cr>
+  nnoremap <silent> <c-a>p :TmuxNavigatePrevious<cr>
 
   " ColorScheme Settings
   if exists('+termguicolors') && ($TERM == "xterm-256color" || $TERM == "tmux-256color" || $TERM == 'alacritty')
