@@ -107,7 +107,7 @@ set hidden
 
 " saves the current cursor position, so that we can get back where we
 " left off
-set viminfo='10,\"100,:20,%
+let &viminfo="'10,\"100,:20,%,n".&viminfofile
 augroup restoreline
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
