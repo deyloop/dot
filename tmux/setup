@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+: ${XDG_CONFIG_HOME:="$HOME/.config"}
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+ln -sf "$SCRIPT_DIR" "$XDG_CONFIG_HOME/tmux"
