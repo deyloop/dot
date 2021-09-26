@@ -4,3 +4,6 @@
 [submodule "icons/vimix-icon-theme"]
 	path = icons/vimix-icon-theme
 	url = git@github.com:deyloop/vimix-icon-theme.git
+[submodule "fonts"]
+	path = fonts
+	url = git@github.com:deyloop/fonts
