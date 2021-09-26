@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+ln -sf "$SCRIPT_DIR/dir_colors" "$HOME/.config/dir_colors"
+
+GLOBIGNORE='.:..' 
+for f in $SCRIPT_DIR/.*; do
+  ln -sf "$f" "$HOME/${f##*/}"
+done
