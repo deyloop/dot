@@ -38,11 +38,11 @@ if ${USE_COLOR} ; then
   
   # Colors for less
   # https://www.howtogeek.com/683134/how-to-display-man-pages-in-color-on-linux/
-  export LESS_TERMCAP_md=$'\e[01;31m'
+  export LESS_TERMCAP_md=$'\e[01;36m'
   export LESS_TERMCAP_me=$'\e[0m'
   export LESS_TERMCAP_us=$'\e[01;32m'
   export LESS_TERMCAP_ue=$'\e[0m'
-  export LESS_TERMCAP_so=$'\e[45;93m'
+  export LESS_TERMCAP_so=$'\e[30;44m'
   export LESS_TERMCAP_se=$'\e[0m'
 
   alias ls='ls --color=auto --group-directories-first'
