@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+# installs the vimix icon theme to ~/.local/share/icons
+./vimix-icon-theme/install.sh -a

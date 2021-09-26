@@ -1,3 +1,6 @@
 [submodule "themes/Vimix-Devoid"]
 	path = themes/Vimix-Devoid
 	url = git@github.com:deyloop/Vimix-Devoid
+[submodule "icons/vimix-icon-theme"]
+	path = icons/vimix-icon-theme
+	url = git@github.com:deyloop/vimix-icon-theme.git
