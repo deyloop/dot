@@ -340,6 +340,21 @@ endif
 "-------------------Syntax Highlighting Modifications-------------------
 hi Error term=underline cterm=underline ctermbg=None ctermfg=4 guifg=#ff0000 gui=underline
 
+
+"---------------------------Usefull Functions---------------------------
+
+" Displays all the syntax rules for current cursor position, useful when
+" writing vimscript syntax plugins, or modifying highlight colors.
+" Taken from https://github.com/rwxrob/dot
+if has("syntax")
+  function! SynStack()
+    if !exists("*synstack")
+      return
+    endif
+    echo map(synstack(line('.'),col('.')), 'synIDattr(v:val, "name")')
+  endfunction
+endif
+
 "----------------------NETRW -- if I ever need it-----------------------
 let g:netrw_banner = 0        " disable the banner
 let g:netrw_liststyle = 3     " tree view
