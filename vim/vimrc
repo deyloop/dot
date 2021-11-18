@@ -307,13 +307,16 @@ if !empty(glob(plug_path))
 
   " Code folding
   set nofoldenable
+  set foldtext=MyFoldText()
   function! MyFoldText()
     let line = getline(v:foldstart)
     let foldedlinecount = v:foldend - v:foldstart + 1
     return ' «» '. foldedlinecount . ' ' . line
   endfunction
-  set foldtext=MyFoldText()
   set fillchars=fold:\ 
+
+  " fold color
+  hi Folded term=standout ctermfg=7 ctermbg=8 guifg=#777272 guibg=#1b1d1f
 
   " Debugging using Vimspector
   let g:vimspector_install_gadgets = ['CodeLLDB', 'vscode-cpptools', 'lldb-vscode']
