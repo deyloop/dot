@@ -16,7 +16,7 @@ create_xpm_icon () {
     pixels=$(for i in `seq $1`; do echo -n "."; done)
 
     cat << EOF > "$2"
-/* XPM *
+/* XPM */
 static char * trayer_pad_xpm[] = {
 /* This XPM icon is used for padding in xmobar to */
 /* leave room for trayer-srg. It is dynamically   */
@@ -26,7 +26,7 @@ static char * trayer_pad_xpm[] = {
 /* <w/cols>  <h/rows>  <colors>  <chars per pixel> */
 "$1 1 1 1",
 /* Colors (none: transparent) */
-". c none",
+". c #ff0000",
 /* Pixels */
 "$pixels"
 };
