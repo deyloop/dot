@@ -35,7 +35,7 @@ _screenshot_select(){
 
   sleep 1 # wait for the menu, if there , to fade away
 
-  scrot -sf "$path"
+  scrot -s -f "$path"
   _screenshot_notification "$path"
 }
 
