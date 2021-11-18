@@ -83,7 +83,10 @@ Config
                 \ <fc=#585858>|</fc> \
                 \<fc=#af87d7>%date%</fc>\
                 \ <fc=#585858>|</fc> \
-                \%trayerpad% :"
-  }
-
+                \%trayerpad%\
+                \ <fc=#585858>|</fc> \
+                \<action=`~/.local/bin/scripts/powermenu`>\
+                  \<fn=1> </fn>\
+                \</action>\
+                \:"
 -- vim: ft=config
