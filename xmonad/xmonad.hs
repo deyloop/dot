@@ -16,31 +16,36 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.Place
 
 -- Layouts
-import XMonad.Layout.Renamed
+import XMonad.Layout.Renamed as R
+import XMonad.Layout.SubLayouts
 import XMonad.Layout.WindowNavigation
+import XMonad.Layout.BoringWindows
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Tabbed
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Column
+import XMonad.Layout.Simplest
+import XMonad.Layout.ResizableTile
 
 -- Actions
 import XMonad.Actions.WithAll
 import XMonad.Actions.FloatKeys
+import XMonad.Actions.CycleWS
 
 import Data.Maybe
 import Data.Monoid
 import qualified Data.Map as M
 
 main :: IO ()
-main = xmonad . ewmh
+main = xmonad . ewmh 
   =<< statusBar "xmobar" myXmobarPP toggleStrutsKey myConfig
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
     toggleStrutsKey XConfig{ modMask = m } = (m, xK_b)
 
 myTerminal = "alacritty"
-myWorkSpaces = ["\xf121","\xf0b1","\xf11b","4","5","6","7","8","\xf2d2"]
-myWorkspaceIndices =  M.fromList $ zipWith (,) myWorkSpaces [1..]
+myWorkSpaces = ["\xf121","\xf0b1","\xf11b","\xf086","\xf001","\xf26c","7","8","\xf2d2"]
+myWorkspaceIndices =  M.fromList $ zip myWorkSpaces [1..]
 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
   where i = fromJust $ M.lookup ws myWorkspaceIndices
@@ -65,12 +70,16 @@ myKeys =
   [ ("M-w"        , spawn "firefox &")
   , ("M-f"        , spawn "pcmanfm &")
   , ("M-<Return>" , spawn $ myTerminal ++ " -e tmux new -As 'base' &")
-  , ("M-S-p"      , spawn "~/.local/bin/scripts/pscircle-draw")
+  , ("M-S-p"      , spawn "pscircle-draw")
+
+  -- clear primary clipboard
+  , ("M-a", spawn "clear-primary")
 
   -- rofi menus
   , ("M-z d", spawn "rofi -show drun")
   , ("M-z z", spawn "rofi -show run")
   , ("M-z w", spawn "rofi -show window")
+  , ("M-z e", spawn "emoji")
   , ("M-c"  , spawn "dunstctl context")   -- dunst context menu
 
   -- window management
@@ -81,6 +90,18 @@ myKeys =
   , ("M-h", sendMessage $ Go L)
   , ("M-k", sendMessage $ Go U)
   , ("M-j", sendMessage $ Go D)
+
+  -- sublayouts
+  , ("M-S-a h", sendMessage $ pullGroup L)
+  , ("M-S-a l", sendMessage $ pullGroup R)
+  , ("M-S-a k", sendMessage $ pullGroup U)
+  , ("M-S-a j", sendMessage $ pullGroup D)
+  
+  , ("M-C-u", withFocused (sendMessage . UnMerge))
+
+  , ("M-C-a h", onGroup W.focusUp')
+  , ("M-C-a l", onGroup W.focusDown')
+
   -- moving windows
   , ("M-C-l", sendMessage $ Swap R)
   , ("M-C-h", sendMessage $ Swap L)
@@ -98,27 +119,37 @@ myKeys =
   , ("M-C-S-<Up>", withFocused (keysResizeWindow (0,-10) (0,0)))
   , ("M-C-S-<Down>", withFocused (keysResizeWindow (0,10) (0,0)))
 
+  -- resize tiled windows
+  , ("M-=", sendMessage Expand)
+  , ("M--", sendMessage Shrink)
+  , ("M-S-=", sendMessage MirrorExpand)
+  , ("M-S--", sendMessage MirrorShrink)
+
+  -- switching workspaces
+  , ("M-s l", nextWS)
+  , ("M-s h", prevWS)
+
   -- volume controls
-  , ("<XF86AudioMute>"        , spawn "~/.local/bin/scripts/vol mute")
-  , ("<XF86AudioLowerVolume>" , spawn "~/.local/bin/scripts/vol down")
-  , ("<XF86AudioRaiseVolume>" , spawn "~/.local/bin/scripts/vol up")
+  , ("<XF86AudioMute>"        , spawn "vol mute")
+  , ("<XF86AudioLowerVolume>" , spawn "vol down")
+  , ("<XF86AudioRaiseVolume>" , spawn "vol up")
 
   -- brightness controls
-  , ("<XF86MonBrightnessUp>"    , spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness up")
-  , ("<XF86MonBrightnessDown>"  , spawn "CHANGE_AMOUNT=10 ~/.local/bin/scripts/brightness down")
-  , ("S-<XF86MonBrightnessUp>"  , spawn "~/.local/bin/scripts/brightness up")
-  , ("S-<XF86MonBrightnessDown>", spawn "~/.local/bin/scripts/brightness down")
+  , ("<XF86MonBrightnessUp>"    , spawn "CHANGE_AMOUNT=10 brightness up")
+  , ("<XF86MonBrightnessDown>"  , spawn "CHANGE_AMOUNT=10 brightness down")
+  , ("S-<XF86MonBrightnessUp>"  , spawn "brightness up")
+  , ("S-<XF86MonBrightnessDown>", spawn "brightness down")
 
   -- screenshot
-  , ("<Print>", spawn "~/.local/bin/scripts/screenshot full")
-  , ("M-<Print>", spawn "~/.local/bin/scripts/screenshot")
+  , ("<Print>", spawn "screenshot full")
+  , ("M-<Print>", spawn "screenshot")
 
   
   -- restart in place
   , ("M-r", spawn "xmonad --recompile; killall xmobar; xmonad --restart")
 
   -- Power Menu
-  , ("M-<Delete>", spawn "~/.local/bin/scripts/powermenu")
+  , ("M-<Delete>", spawn "powermenu")
   ]
   ++
   -- Move all windows in the current workspace to target workspace
@@ -135,27 +166,29 @@ myManageHook = composeAll
   , className =? "Blueman-manager"    --> doFloat
   , className =? "Xmessage"           --> doCenterFloat
   , isFullscreen                      --> doFullFloat
-  , isDialog                            --> doFloat
+  , isDialog                          --> doFloat
   ]
 
-myLayout = avoidStruts . smartBorders .windowNavigation $ cols ||| tiled ||| tabs ||| zen
+myLayout = windowNavigation $ boringWindows $ smartBorders . avoidStruts $ (tiled ||| cols ||| tabs ||| zen)  
   where
-    zen       = renamed [ Replace "zen" ] 
-                $ Full
+    zen          = renamed [ R.Replace "zen" ] 
+                   $ Full
 
-    cols      = renamed [ Replace "col" ] 
-                $ Mirror 
-                $ Column colsRatio
-    colsRatio = 1.0
+    cols         = renamed [ R.Replace "col" ] 
+                   $ Mirror 
+                   $ Column colsRatio
+    colsRatio    = 1.0
 
-    tiled     = renamed [ Replace "tiled"] 
-                $ Tall nmaster delta ratio
-    nmaster   = 1
-    ratio     = 1/2
-    delta     = 3/100
+    tiled        = renamed [ R.Replace "mst"] 
+                   $ addTabs shrinkText myTabTheme
+                   $ subLayout [] Simplest
+                   $ ResizableTall nmaster delta ratio []
+    nmaster      = 1
+    delta        = 3/100
+    ratio        = 1/2
 
-    tabs      = renamed [ Replace "tabs" ]
-                $ tabbedBottom shrinkText myTabTheme
+    tabs         = renamed [ R.Replace "tab" ]
+                   $ tabbedBottom shrinkText myTabTheme
 
 -- setting colors for tabs layout and tabs sublayout.
 myTabTheme = def { fontName            = "xft:Hack:size=9"
