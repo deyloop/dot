@@ -323,6 +323,7 @@ if !empty(glob(plug_path))
 
   nmap <leader>dd <Plug>VimspectorContinue
   nmap <leader>dx <Plug>VimspectorStop
+  nmap <leader>dX <Plug>VimspectorReset
   nmap <leader>dR <Plug>VimspectorRestart
   nmap <leader>dp <Plug>VimspectorPause
   nmap <leader>dbt <Plug>VimspectorToggleBreakpoint
