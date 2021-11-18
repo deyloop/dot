@@ -25,7 +25,24 @@ nb_create() {
 
 nb_search() {
   cd "$NOTEBOX_ROOT_DIR"
-  git grep -ir "${@//\ /\.\*}"
+  local results="$( git grep --color -nir "${@//\ /\.\*}" )"
+  local -A resultFiles
+  while IFS= read -r line
+  do
+    if [[ $line =~ ([^:]*):(.*) ]]; then
+      local file_name="${BASH_REMATCH[1]}"
+      local result_line="${BASH_REMATCH[2]}"
+
+      resultFiles[${file_name%/*}]+="$result_line"
+      resultFiles[${file_name%/*}]+=$'\n'
+    fi
+  done < <(echo "$results")
+  
+  for i in "${!resultFiles[@]}"
+  do
+    echo -e "\e[1;32m$i"
+    echo "${resultFiles[$i]}"
+  done
 }
 
 nb_title() {
@@ -38,7 +55,7 @@ nb_title() {
 
 nb_list() {
   for dir in $(nb_list_ids); do
-    printf "[%s] %s\n" "$dir" "$(nb_title "$dir")"
+    printf "%s %s\n" "$dir" "$(nb_title "$dir")"
   done
 }
 
@@ -76,6 +93,13 @@ nb_edit() {
     git add "$id" && \
     git commit -m "$(nb_title "$id")"
   fi
+
+  read -rp "Push? " ans
+  if [[ $ans =~ [Yy].* ]]; then
+    cd "$NOTEBOX_ROOT_DIR" && \
+    git push
+  fi
+
 }
 
 _nb(){
