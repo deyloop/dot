@@ -337,6 +337,9 @@ if !empty(glob(plug_path))
 
 endif
 
+"-------------------Syntax Highlighting Modifications-------------------
+hi Error term=underline cterm=underline ctermbg=None ctermfg=4 guifg=#ff0000 gui=underline
+
 "----------------------NETRW -- if I ever need it-----------------------
 let g:netrw_banner = 0        " disable the banner
 let g:netrw_liststyle = 3     " tree view
