@@ -1,5 +1,4 @@
 configuration {
-  theme: "theme.rasi";
   font: "mono 10";
   show-icons: true;
 
@@ -17,4 +16,4 @@ configuration {
   }
 }
 
-// vim: ft=config
+@theme "theme.rasi"
