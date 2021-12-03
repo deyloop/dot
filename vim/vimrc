@@ -263,6 +263,7 @@ if !empty(glob(plug_path))
           \ 'command': 'clangd --background-index',
           \ 'suppress_stderr': v:true
           \ },
+        \ 'python' : 'pyls',
         \}
 
 
@@ -302,6 +303,9 @@ if !empty(glob(plug_path))
     endif
     if executable("rustfmt")
       au BufWritePre *.rs silent call FormatBuffer("rustfmt -q")
+    endif
+    if executable("black")
+      au BufWritePre *.py silent call FormatBuffer("black -q -")
     endif
   augroup END
 
