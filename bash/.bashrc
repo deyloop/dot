@@ -63,6 +63,7 @@ export USE_COLOR
 __ps1() {
   local exit_code="$?"
   local branch=$(git branch --show-current 2>/dev/null)
+  local venv="${VIRTUAL_ENV##*/}"
 
   if ${USE_COLOR}; then
     local q='\[\e[0;35m\]'
@@ -80,17 +81,19 @@ __ps1() {
     local dir="$w\W"
     [[ ${EUID} == 0 ]] && user="${u}root"
     [[ -n "$branch" ]] && branch="$g($b$branch$g)"
+    [[ -n "$venv" ]] && venv="$q($venv)"
     [[ $exit_code != 0 ]] && exit_code="${y}⚠️  ${s}$exit_code" || exit_code=""
 
-    PS1="$q[$user$g@$host$g:$dir$branch$q] $exit_code\n$q\$$x "
+    PS1="$q[$user$g@$host$g:$dir$branch$q] $venv $exit_code\n$q\$$x "
   else
     local user="\u"
     local host="\h"
     local dir="\W"
     [[ ${EUID} == 0 ]] && user="root"
     [[ -n "$branch" ]] && branch="(⎇ $branch)"
+    [[ -n "$venv" ]] && venv="($venv)"
 
-    PS1="[$user@$host:$dir$branch]\n\$"
+    PS1="[$user@$host:$dir$branch] $venv \n\$"
   fi
   # Change the window title of X terminals
 
@@ -100,6 +103,7 @@ __ps1() {
       ;;
   esac
 }  
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 PROMPT_COMMAND="__ps1"
 
 
