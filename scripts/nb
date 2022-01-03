@@ -23,7 +23,7 @@ nb_create() {
   fi
 }
 
-nb_search() {
+nb.search() {
   cd "$NOTEBOX_ROOT_DIR"
   local results="$( git grep --color -nir "${@//\ /\.\*}" )"
   local -A resultFiles
@@ -40,8 +40,8 @@ nb_search() {
   
   for i in "${!resultFiles[@]}"
   do
-    echo -e "\e[1;32m$i"
-    echo "${resultFiles[$i]}"
+    echo -e "\e[1;32m$i\e[0m \e[1m$(nb_title $i)\e[0m"
+    # echo "${resultFiles[$i]}"
   done
 }
 
@@ -110,7 +110,7 @@ _nb(){
 
   case "$cmd" in
     create) nb_create "$@" ;;
-    search) nb_search "$@" ;;
+    search) nb.search "$@" ;;
     title) nb_title "$1" ;;
     list) nb_list ;;
     last) nb_last ;;
