@@ -188,6 +188,9 @@ if !empty(glob(plug_path))
     Plug 'vim-pandoc/vim-pandoc'   
     Plug 'vim-pandoc/vim-pandoc-syntax'   
 
+    " Better syntax highlighting
+    Plug 'sheerun/vim-polyglot'
+
   call plug#end()
 
   " TMUX navigation settings
