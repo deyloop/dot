@@ -18,7 +18,7 @@ clone() {
   # TODO: add supposrt for urls starting with https://
 
   # validate url
-  local regex='^git@([-A-Za-z.]*):([-A-Za-z0-9_-]*)/([-A-Za-z0-9_]*)(.git)?$'
+  local regex='^git@([-A-Za-z.]*):([-A-Za-z0-9_-]*)/([-A-Za-z0-9_/]*)(.git)?$'
   if [[ ! $repo_url =~ $regex ]]; then
     echo 'Repo url format not supported. Clone manually.'
     exit
