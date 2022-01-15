@@ -86,7 +86,6 @@ set smarttab
 set shiftwidth=2
 set softtabstop=2
 set backspace=indent,eol,start
-set textwidth=72
 
 " make vim behave 
 set noswapfile
@@ -104,6 +103,7 @@ set clipboard=unnamedplus
 
 set matchpairs+=<:>   " Use % to jump between html tags as well
 set hidden
+set nolist
 
 " saves the current cursor position, so that we can get back where we
 " left off
@@ -114,10 +114,9 @@ augroup END
 
 " Fast rendering
 set ttyfast
-
 "------------------------Personal Key-bindings--------------------------
 
-" Toggle Whitespace character rendering
+" Toggle White space character rendering
 nnoremap <leader>tl :set list!<CR>
 set listchars=tab:>·,trail:~,extends:>,precedes:<,space:·,eol:↩
 
@@ -133,6 +132,21 @@ nnoremap Y y$
 
 " remove search highlighting
 nnoremap <esc><esc> :silent! nohls<cr>
+
+" execute the current paragraph and print the output bellow the paragraph
+" itself (paragraph must be a bash command)
+
+nnoremap <leader>cp yip}o# OUTPUT:<esc>o<esc>p!ipbash<CR>
+
+" Buffer Operations
+
+nnoremap <leader>bl :buffers<CR>
+nnoremap <leader>bn :bn<CR>
+nnoremap <leader>bp :bp<CR>
+nnoremap <leader>bd :bd<CR>
+
+" Opening files using fuzzy names
+nnoremap <leader>f :find<space>
 
 "--------------------------------Plugins--------------------------------
 let data_dir = VimStdPath('data')
@@ -215,7 +229,7 @@ if !empty(glob(plug_path))
         \ 'colorscheme' : 'one',
         \ 'active': {
           \ 'left': [ [ 'mode', 'paste' ],
-          \           [ 'readonly', 'filename', 'modified'],
+          \           [ 'readonly', 'relativepath', 'modified'],
           \           [ 'lsc' ] ],
           \},
         \ 'component_function': {
@@ -244,6 +258,7 @@ if !empty(glob(plug_path))
   set noshowmode
 
   " pandoc settings
+  let pandoc#formatting#mode = 'h'
   let pandoc#formatting#textwidth = 72
 
   " Language support (LSP) via vim-lsc
@@ -279,7 +294,7 @@ if !empty(glob(plug_path))
 
   set completeopt=menu,menuone,noselect,noinsert
 
-  let g:lsc_enable_autocomplete = v:false
+  let g:lsc_enable_autocomplete = v:true
   let g:lsc_enable_diagnostics = v:true
   let g:lsc_reference_highlights = v:false
   let g:lsc_trace_level = 'off'
@@ -343,7 +358,7 @@ endif
 
 "-------------------Syntax Highlighting Modifications-------------------
 hi Error term=underline cterm=underline ctermbg=None ctermfg=4 guifg=#ff0000 gui=underline
-
+hi ColorColumn term=reverse ctermbg=1 guibg=#121212
 
 "---------------------------Usefull Functions---------------------------
 
