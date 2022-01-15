@@ -1,31 +1,70 @@
 #!/usr/bin/bash
+set -e
+shopt -s extglob
 
 : "${GITHUB_USER:="$USER"}"
 : "${REPOS_DIR:="$HOME/repos"}"
 : "${NOTEBOX_ROOT_DIR:="$REPOS_DIR/github.com/$GITHUB_USER/notebox"}"
 : "${EDITOR:=vim}"
+: "${EXE:="${0##*/}"}"
 
-nb_create() {
-  local title note_dir
+# For auto generation of help output
+declare -A HELP
+
+x.get() {
+  local arg="$*"
+  if [[ $arg =~ ^[0-9]{14,}$ ]]; then
+    echo "$1"
+  elif [[ $arg = last ]]; then
+    last="$(x.last)"
+    [[ -n "$last" ]] && echo "$last"
+  else
+    mapfile -t matches < <(x.search "$@")
+    (( ${#matches[@]} > 0 )) || return 1
+    if (( ${#matches[@]} == 1 )); then
+      echo "${matches[0]%% *}"
+      return
+    fi
+    select match in "${matches[@]}"; do
+      echo "${match%% *}"
+      return $?
+    done
+  fi
+}
+
+x.commit(){
+  local id="$(x.get "$@")"
+  
+  read -rp "Commit? " ans
+  if [[ $ans =~ [Yy].* ]]; then
+    cd "$NOTEBOX_ROOT_DIR" && \
+    git add "$id" && \
+    git commit -m "$(x.title "$id")" >/dev/null && \
+    git push >/dev/null
+    echo "notebox commited and pushed"
+  fi
+}
+
+x.new() {
+  local title note_dir id
   title="$*"
 
-  note_dir="$NOTEBOX_ROOT_DIR/$(isosec)"
+  id="$(__isosec)" 
+  note_dir="$NOTEBOX_ROOT_DIR/$id"
   mkdir -p "$note_dir"
+
+  if [[ -z $title ]]; then return; fi
 
   echo "# $title" >> "$note_dir/README.md"
   command $EDITOR "$note_dir/README.md"
 
-  if [[ -z $title ]]; then return; fi
-
-  read -rp "Commit? " ans
-  if [[ $ans =~ [Yy].* ]]; then
-    cd "$NOTEBOX_ROOT_DIR" && git add "$note_dir" && git commit -m "$title"
-  fi
+  x.commit "$id"
 }
 
-nb.search() {
+x.search() {
   cd "$NOTEBOX_ROOT_DIR"
-  local results="$( git grep --color -nir "${@//\ /\.\*}" )"
+  local searchterms="$@"
+  local results="$( git grep --color -nir "${searchterms//\ /\.\*}" )"
   local -A resultFiles
   while IFS= read -r line
   do
@@ -36,88 +75,136 @@ nb.search() {
       resultFiles[${file_name%/*}]+="$result_line"
       resultFiles[${file_name%/*}]+=$'\n'
     fi
-  done < <(echo "$results")
+  done <<< "$results"
   
   for i in "${!resultFiles[@]}"
   do
-    echo -e "\e[1;32m$i\e[0m \e[1m$(nb_title $i)\e[0m"
+    echo "$i $(x.title "$i")"
     # echo "${resultFiles[$i]}"
   done
 }
 
-nb_title() {
+x.title() {
   local id
-  id="$1"
+  id="$(x.get "$@")"
   
-  local title="$(head -1 "$NOTEBOX_ROOT_DIR/$id/README.md")"
+  local title="$(head -1 "$id/README.md")"
   echo "${title### }"
 }
 
-nb_list() {
-  for dir in $(nb_list_ids); do
-    printf "%s %s\n" "$dir" "$(nb_title "$dir")"
+x.list() {
+  cd "$NOTEBOX_ROOT_DIR"
+  for dir in $(x.list.ids); do
+    printf "%s %s\n" "$dir" "$(x.title "$dir")"
   done
 }
 
-nb_list_ids() {
+x.list.ids() {
   cd "$NOTEBOX_ROOT_DIR"
   local list=$(ls -1 -d */)
   list="${list//\//}"
   echo "$list"
 }
 
-nb_last() {
-  nb_list_ids | tail -1
+x.last() {
+  x.list.ids | tail -1
 }
 
-nb_open() {
+x.open() {
   local id
-  id="$1"
+  id="$(x.get "$@")"
   
-  [[ "$id" = "last" ]] && id="$(nb_last)"
   command $EDITOR "$NOTEBOX_ROOT_DIR/$id/README.md"
-
 }
 
-nb_edit() {
+x.edit() {
   local id
-  id="$1"
+  id="$(x.get "$@")"
 
-  [[ "$id" = "last" ]] && id="$(nb_last)"
-  
-  nb_open "$id"
-
-  read -rp "Commit? " ans
-  if [[ $ans =~ [Yy].* ]]; then
-    cd "$NOTEBOX_ROOT_DIR" && \
-    git add "$id" && \
-    git commit -m "$(nb_title "$id")"
-  fi
-
-  read -rp "Push? " ans
-  if [[ $ans =~ [Yy].* ]]; then
-    cd "$NOTEBOX_ROOT_DIR" && \
-    git push
-  fi
+  x.open "${id##*/}"
+  x.commit "$id"
 
 }
 
-_nb(){
-  local cmd
-  if [[ -n "$1" ]]; then
-    cmd="$1"; shift
-  fi
+x.pull() {
+  cd "$NOTEBOX_ROOT_DIR" && \
+  git pull >/dev/null
 
-  case "$cmd" in
-    create) nb_create "$@" ;;
-    search) nb.search "$@" ;;
-    title) nb_title "$1" ;;
-    list) nb_list ;;
-    last) nb_last ;;
-    open) nb_open "$1" ;;
-    edit) nb_edit "$1" ;;
-    "" | * ) return 1 ;;
-  esac
+  echo "notebox synced"
 }
 
-_nb "$@"
+x.mdlink() {
+  __line_filter "$@" && return $?
+
+  local line="$@" id title
+  id="${line%% *}"
+  tittle="${line#* }"
+
+  echo "* [$id](../$id/README.md) $tittle"
+}
+
+x.mdreflink() {
+  __line_filter "$@" && return $?
+
+  local line="$@" id title
+  id="${line%% *}"
+  tittle="${line#* }"
+
+  echo "[1]: ../$id/README.md \"$tittle\""
+}
+
+x.ghlink() {
+  __line_filter "$@" && return $?
+
+  local line="$@" id title
+  id="${line%% *}"
+
+  echo "https://github.com/$GITHUB_USER/notebox/tree/main/$id"
+}
+
+
+#---------------------------------Utils---------------------------------
+
+__isosec(){
+  date -u +%Y%m%d%H%M%S
+}
+
+__line_filter() {
+  [[ -n "$1" ]] && return 1
+  while IFS= read -ra args; do
+    "${FUNCNAME[1]}" "${args[@]}"
+  done
+}
+
+
+#-----------------------completion and delegation-----------------------
+#                   use `complete -C nb nb` in bashrc
+
+# Obtain all subcommands
+while IFS= read -r line; do
+  [[ $line =~ ^declare\ -f\ x\. ]] || continue 
+  COMMANDS+=( "${line##declare -f x.}" )
+done < <(declare -F)
+mapfile -t COMMANDS < <(LC_COLLATE=C sort < <(printf "%s\n" "${COMMANDS[@]}"))
+
+# Completion output
+if [[ -n $COMP_LINE  ]]; then
+  line=${COMP_LINE#* }
+  for c in "${COMMANDS[@]}"; do
+    [[ ${c:0:${#line}} == "${line,,}" ]] && echo "$c"
+  done
+  exit
+fi
+
+# Delegation
+if [[ -n "$1" ]]; then
+  declare CMD="$1"; shift
+  for c in "${COMMANDS[@]}"; do
+    if [[ $c == "$CMD" ]]; then
+      "x.$CMD" "$@"
+      exit $?
+    fi
+  done
+fi
+
+echo "nb"
