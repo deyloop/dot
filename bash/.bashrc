@@ -144,10 +144,14 @@ shopt -s histappend
 # Ignores the current command if its duplicate of the previous command,
 # Keeping the history clean and making it easier to press k or up to get
 # to previous commands
-HISTCONTROL=ingnoredups
+#
+# This also ignores any lines that start with a space
+HISTCONTROL=ignoreboth
 
 # Huge history, cos my life depends on it
 HISTSIZE=1000000
+# I choose to not set it to be infinite as I don't wan't to clean the 
+# history from time to time
 
 
 #---------------------------------CDPATH--------------------------------
