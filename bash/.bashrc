@@ -163,6 +163,8 @@ CDPATH="."
 CDPATH+=":~/.local/bin"
 CDPATH+=":$REPOS_DIR"
 CDPATH+=":$REPOS_DIR/github.com/$GITHUB_USER"
+CDPATH+=":$REPOS_DIR/gitlab.com"
+CDPATH+=":$REPOS_DIR/local"
 CDPATH+=":~"
 
 
