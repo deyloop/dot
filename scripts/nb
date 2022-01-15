@@ -136,6 +136,8 @@ x.pull() {
 x.mdlink() {
   __line_filter "$@" && return $?
 
+  # TODO: Add support for converting a bare link into a markdown link
+
   local line="$@" id title
   id="${line%% *}"
   tittle="${line#* }"
@@ -160,6 +162,14 @@ x.ghlink() {
   id="${line%% *}"
 
   echo "https://github.com/$GITHUB_USER/notebox/tree/main/$id"
+}
+
+x.ghsearch() {
+  __line_filter "$@" && return $?
+
+  local search_terms="$@"
+
+  echo "https://github.com/$GITHUB_USER/notebox/search/?q=${search_terms//\ /\+}"
 }
 
 
