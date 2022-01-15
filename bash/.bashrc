@@ -177,7 +177,5 @@ alias more=less
 
 alias '?'=duck
 
-source cdl.sh # this is also sort of like an alias
-
-
+type -P cdl.sh &>/dev/null && source cdl.sh # this is also like an alias
 #-----------------------------------------------------------------------
