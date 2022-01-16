@@ -39,7 +39,7 @@ _play_stream() {
 
 _play(){
   local stream_search_term
-  stream_search_term="$@"
+  stream_search_term="$*"
 
   # We take the music from a file in XDG_DATA_HOME/cmd-music/streams.lst
   if [[ -f $STREAM_LIST ]]; then
