@@ -8,9 +8,6 @@ shopt -s extglob
 : "${EDITOR:=vim}"
 : "${EXE:="${0##*/}"}"
 
-# For auto generation of help output
-declare -A HELP
-
 x.get() {
   local arg="$*"
   if [[ $arg =~ ^[0-9]{14,}$ ]]; then
@@ -33,7 +30,9 @@ x.get() {
 }
 
 x.commit(){
-  local id="$(x.get "$@")"
+  local id ans
+
+  id="$(x.get "$@")"
   
   read -rp "Commit? " ans
   if [[ $ans =~ [Yy].* ]]; then
@@ -63,8 +62,12 @@ x.new() {
 
 x.search() {
   cd "$NOTEBOX_ROOT_DIR"
-  local searchterms="$@"
-  local results="$( git grep --color -nir "${searchterms//\ /\.\*}" )"
+
+  local searchterms results
+
+  searchterms="$*"
+  results="$( git grep --color -nir "${searchterms//\ /\.\*}" )"
+
   local -A resultFiles
   while IFS= read -r line
   do
@@ -85,10 +88,10 @@ x.search() {
 }
 
 x.title() {
-  local id
+  local id tittle
   id="$(x.get "$@")"
   
-  local title="$(head -1 "$id/README.md")"
+  title="$(head -1 "$id/README.md")"
   echo "${title### }"
 }
 
@@ -101,7 +104,9 @@ x.list() {
 
 x.list.ids() {
   cd "$NOTEBOX_ROOT_DIR"
-  local list=$(ls -1 -d */)
+  local list
+  list=$(ls -1 -d ./*/)
+  list="${list//\.\//}"
   list="${list//\//}"
   echo "$list"
 }
@@ -138,7 +143,8 @@ x.mdlink() {
 
   # TODO: Add support for converting a bare link into a markdown link
 
-  local line="$@" id title
+  local line id title
+  line="$*"
   id="${line%% *}"
   tittle="${line#* }"
 
@@ -148,7 +154,8 @@ x.mdlink() {
 x.mdreflink() {
   __line_filter "$@" && return $?
 
-  local line="$@" id title
+  local line id title
+  line="$*"
   id="${line%% *}"
   tittle="${line#* }"
 
@@ -158,7 +165,8 @@ x.mdreflink() {
 x.ghlink() {
   __line_filter "$@" && return $?
 
-  local line="$@" id title
+  local line id title
+  line="$*"
   id="${line%% *}"
 
   echo "https://github.com/$GITHUB_USER/notebox/tree/main/$id"
@@ -167,7 +175,7 @@ x.ghlink() {
 x.ghsearch() {
   __line_filter "$@" && return $?
 
-  local search_terms="$@"
+  local search_terms="$*"
 
   echo "https://github.com/$GITHUB_USER/notebox/search/?q=${search_terms//\ /\+}"
 }
