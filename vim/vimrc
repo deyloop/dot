@@ -148,6 +148,9 @@ nnoremap <leader>bd :bd<CR>
 " Opening files using fuzzy names
 nnoremap <leader>f :find<space>
 
+" Compile and open quickfix window
+nnoremap <leader>cb :make\|copen<CR><CR>
+
 "--------------------------------Plugins--------------------------------
 let data_dir = VimStdPath('data')
 let plug_path = data_dir . '/autoload/plug.vim'
