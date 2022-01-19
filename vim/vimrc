@@ -189,12 +189,12 @@ if !empty(glob(plug_path))
 
     " Markdown with pandoc
     Plug 'vim-pandoc/vim-pandoc'   
-    Plug 'vim-pandoc/vim-pandoc-syntax'   
 
     " Better syntax highlighting
     Plug 'sheerun/vim-polyglot'
 
   call plug#end()
+
 
   " TMUX navigation settings
   let g:tmux_navigator_save_on_switch = 2
@@ -266,6 +266,12 @@ if !empty(glob(plug_path))
   " pandoc settings
   let pandoc#formatting#mode = 'h'
   let pandoc#formatting#textwidth = 72
+
+  " markdown 
+  augroup markdown
+    au BufRead *.md :setlocal filetype=markdown
+  augroup END
+  let g:markdown_fenced_languages = ['shell', 'python']
 
   " Language support (LSP) via vim-lsc
 
