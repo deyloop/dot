@@ -149,7 +149,7 @@ nnoremap <leader>bd :bd<CR>
 nnoremap <leader>f :find<space>
 
 " Compile and open quickfix window
-nnoremap <leader>cb :make\|copen<CR><CR>
+nnoremap <leader>cb :silent! make\|copen<CR>:redraw!<CR>
 
 "--------------------------------Plugins--------------------------------
 let data_dir = VimStdPath('data')
