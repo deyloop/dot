@@ -119,6 +119,7 @@ if [[ -r /usr/share/bash-completion/bash_completion ]]; then
 fi
 
 complete -cf sudo
+complete -C nb nb
 
 
 #-----------------------------Shell Options-----------------------------
