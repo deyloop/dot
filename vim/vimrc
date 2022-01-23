@@ -95,13 +95,18 @@ set splitbelow
 set cursorline
 set colorcolumn=80
 
+" searching
 set incsearch 
 set hlsearch 
+set ignorecase
+set smartcase                     " Use ignore case if lowercase, not if search
+                                  " term contains Uppercase 
+
 set showcmd
 set shortmess=aoOtTI
 set clipboard=unnamedplus
 
-set matchpairs+=<:>   " Use % to jump between html tags as well
+set matchpairs+=<:>               " Use % to jump between html tags as well
 set hidden
 set nolist
 
