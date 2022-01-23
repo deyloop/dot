@@ -3,7 +3,7 @@
 #
 
 # This bashrc is supposed to run only when the shell is invoked as an 
-# interactove shell
+# interactive shell
 [[ $- != *i* ]] && return
 
 
@@ -12,11 +12,10 @@
 
 USE_COLOR=true
 
-# Set colorful PS1 only on colorful terminals.  dircolors
-# --print-database uses its own built-in database instead of using
-# /etc/DIR_COLORS.  Try to use the external file first to take advantage
-# of user additions.  Use internal bash globbing instead of external
-# grep binary.
+# Set colorful PS1 only on colorful terminals. dircolors --print-database uses
+# its own built-in database instead of using /etc/DIR_COLORS. Try to use the
+# external file first to take advantage of user additions. Use internal bash
+# globbing instead of external grep binary.
 safe_term=${TERM//[^[:alnum:]]/?}   # sanitize TERM
 match_lhs=""
 [[ -f ~/.config/dir_colors   ]] && match_lhs="${match_lhs}$(<~/.config/dir_colors)"
