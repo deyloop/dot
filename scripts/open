@@ -1,3 +1,26 @@
 #!/usr/bin/bash
 
+# Opens the file or directory using the correct program
+#
+# When invoked with a file, opens the file using the default program set for
+# that file type
+#
+# When invoked with no arguments, checks to see if the current directory is a
+# git repo hosted on Github, if yes, opens the Github page for the repo in the
+# default browser
+
+open_dir(){
+  local git_remote
+  git_remote=$(git remote -v get-url origin 2>/dev/null)
+  if [[ $git_remote =~ git@github.com:.* ]]; then
+    gh browse
+  else return 1
+  fi
+}
+
+if [[ $# == 0 ]]; then
+  open_dir
+  exit
+fi
+
 xdg-open "$@" &

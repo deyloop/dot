@@ -1,4 +1,4 @@
-import XMonad
+import XMonad hiding (Color, whenJust)
 
 import qualified XMonad.StackSet as W
 
@@ -36,8 +36,9 @@ import Data.Maybe
 import Data.Monoid
 import qualified Data.Map as M
 
+
 main :: IO ()
-main = xmonad . ewmh 
+main = xmonad . ewmh
   =<< statusBar "xmobar" myXmobarPP toggleStrutsKey myConfig
   where
     toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
@@ -46,9 +47,6 @@ main = xmonad . ewmh
 myTerminal = "alacritty"
 myWorkSpaces = ["\xf121","\xf0b1","\xf11b","\xf086","\xf001","\xf26c","7","8","\xf2d2"]
 myWorkspaceIndices =  M.fromList $ zip myWorkSpaces [1..]
-
-clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
-  where i = fromJust $ M.lookup ws myWorkspaceIndices
 
 myBorderWidth = 2
 
@@ -169,6 +167,7 @@ myManageHook = composeAll
   , isDialog                          --> doFloat
   ]
 
+
 myLayout = windowNavigation $ boringWindows $ smartBorders . avoidStruts $ (tiled ||| cols ||| tabs ||| zen)  
   where
     zen          = renamed [ R.Replace "zen" ] 
@@ -200,11 +199,16 @@ myTabTheme = def { fontName            = "xft:Hack:size=9"
                  , inactiveTextColor   = "#d0d0d0"
                  }
 
+clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
+  where i = fromJust $ M.lookup ws myWorkspaceIndices
+
+clickLayout ly = "<action=xdotool key super+space>" ++ ly ++ "</action>"
+
 myXmobarPP :: PP
 myXmobarPP = def
   { ppSep               = magenta " • "
   , ppTitle             = green . ppWindow
-  , ppLayout            = lowWhite
+  , ppLayout            = lowWhite . clickLayout
   , ppCurrent           = wrap (blue "[") (blue "]") . yellow
   , ppHidden            = white . wrap " " " " . clickable
   , ppHiddenNoWindows   = lowWhite . wrap " " " " . clickable
