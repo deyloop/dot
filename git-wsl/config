@@ -1,7 +1,8 @@
 [user]
 	email = me.deyloop@gmail.com
 	name = Anurup Dey
-	signingkey = 987EECD68CCEBB9A
+	signingkey = CFB042090A31B180
+        
 [init]
 	defaultBranch = main
 [commit]
@@ -10,3 +11,5 @@
 	tool = vimdiff
 [difftool]
 	prompt = false
+[gpg]
+	program = /mnt/c/Users/EQ716BC/AppData/Local/GnuPG/bin/gpg.exe
