@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+: ${XDG_CONFIG_HOME:=$HOME/.config}
+: ${XDG_DATA_HOME:=$HOME/.local/share}
+: ${XDG_CACHE_HOME:=$HOME/.cache}
+: ${VIMXDG:=1}
+
+ln -sf "$SCRIPT_DIR" "$XDG_CONFIG_HOME/lynx"
+mkdir -p "$XDG_DATA_HOME/lynx" "$XDG_CACHE_HOME/lynx"
