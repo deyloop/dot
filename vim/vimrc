@@ -198,6 +198,9 @@ if !empty(glob(plug_path))
     " Better syntax highlighting
     Plug 'sheerun/vim-polyglot'
 
+    " Fetch Git Branch
+    Plug 'itchyny/vim-gitbranch'
+
   call plug#end()
 
 
@@ -239,12 +242,13 @@ if !empty(glob(plug_path))
   let g:lightline = {
         \ 'colorscheme' : 'one',
         \ 'active': {
-          \ 'left': [ [ 'mode', 'paste' ],
-          \           [ 'readonly', 'relativepath', 'modified'],
-          \           [ 'lsc' ] ],
+          \ 'left': [ [ 'mode', 'paste'],
+          \           [ 'readonly','relativepath', 'modified'],
+          \           [ 'gitbranch', 'lsc' ] ],
           \},
         \ 'component_function': {
-          \ 'lsc': 'LightlineLSCStatus' 
+          \ 'lsc': 'LightlineLSCStatus',
+          \ 'gitbranch': 'GitBranch'
           \},
         \ 'mode_map': {
           \ 'n' : 'N',
@@ -263,7 +267,12 @@ if !empty(glob(plug_path))
 
   function! LightlineLSCStatus()
     let status = LSCServerStatus()
-    return status !=# '' ? ' :'.status : ''
+    return status !=# '' ? '  '.status : ''
+  endfunction
+
+  function! GitBranch()
+    let name = gitbranch#name()
+    return name !=# '' ? ' '. name : ''
   endfunction
 
   set noshowmode
@@ -289,7 +298,7 @@ if !empty(glob(plug_path))
           \ 'suppress_stderr': v:true
           \ },
         \ 'haskell': {
-          \ 'command': 'haskell-language-server-wrapper --lsp'
+          \ 'command': 'stack exec haskell-language-server-wrapper -- --lsp'
           \},
         \ 'c': {
           \ 'command': 'clangd --background-index',
