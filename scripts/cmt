@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+
+__line_filter() {
+  [[ -n "$1" ]] && return 1
+  while IFS= read -ra args; do
+    "${FUNCNAME[1]}" "${args[@]}"
+  done
+}
+
+_cmt(){
+  __line_filter "$@" && return $?
+
+  local line
+  line="$*"
+  echo "# $line"
+}
+
+_cmt "$@"
