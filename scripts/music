@@ -79,6 +79,7 @@ _play() {
   local file
   file="${*:-"$HOME/music"}"
   _start_mpv
+  echo '{ "command": ["set", "vid", "no"] }' | socat - "$MPV_SOCKET" &>/dev/null
   echo '{ "command": ["set", "shuffle", "yes"] }' | socat - "$MPV_SOCKET" &>/dev/null
   echo "{ \"command\": [\"loadfile\", \"$file\"] }" | socat - "$MPV_SOCKET" #&>/dev/null
 }
