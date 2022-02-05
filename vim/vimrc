@@ -192,9 +192,6 @@ if !empty(glob(plug_path))
     Plug 'tpope/vim-surround'
     Plug 'jiangmiao/auto-pairs'
 
-    " Markdown with pandoc
-    Plug 'vim-pandoc/vim-pandoc'   
-
     " Better syntax highlighting
     Plug 'sheerun/vim-polyglot'
 
@@ -276,10 +273,6 @@ if !empty(glob(plug_path))
   endfunction
 
   set noshowmode
-
-  " pandoc settings
-  let pandoc#formatting#mode = 'h'
-  let pandoc#formatting#textwidth = 72
 
   " markdown 
   augroup markdown
