@@ -98,6 +98,22 @@ _prev(){
   echo '{ "command": ["playlist-prev"] }' | socat - "$MPV_SOCKET" &>/dev/null
 }
 
+_pause() {
+  echo '{ "command": ["set", "pause", "yes" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
+_unpause() {
+  echo '{ "command": ["set", "pause", "no" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
+_loop() {
+  echo '{ "command": ["set", "loop-file", "inf" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
+_unloop() {
+  echo '{ "command": ["set", "loop-file", "no" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
 _edit() {
   exec ${EDITOR:-vim} "$STREAM_LIST"
 }
@@ -111,6 +127,10 @@ _music() {
   case "$cmd" in
     ""|stream) _stream "$@" ;;
     play) _play "$@" ;;
+    pause) _pause ;;
+    unpause) _unpause ;;
+    loop) _loop ;;
+    unloop) _unloop ;;
     stop) _stop_stream ;;
     quit) _quit_mpv ;;
     edit) _edit ;;
