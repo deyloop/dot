@@ -5,20 +5,35 @@ set -e
 
 # Starts playing music from a youtube stream inside a tmux session
 # Depends on
-# - tmux
+# - socat
 # - mpv
 
 STREAM_LIST="$XDG_DATA_HOME/cmd-music/streams-list"
+MPV_SOCKET="/tmp/mpvsocket"
 
 _stop_stream() {
   # attempt to stop the music if its playing
-  if tmux has-session -t music &>/dev/null ; then
-    # Stop the music first
-    tmux send-keys -t music.0 "q"
-
-    tmux kill-session -t music
+  # existence of the socket file means mpv is reading from it
+  if [[ -S $MPV_SOCKET ]]; then
+    echo '{ "command": ["stop"] }' | socat - "$MPV_SOCKET" &>/dev/null
   fi
+}
 
+_quit_mpv() {
+  # existence of the socket file means mpv is reading from it
+  if [[ -S $MPV_SOCKET ]]; then
+    # Stop the music first
+    echo '{ "command": ["quit"] }' | socat - "$MPV_SOCKET" &>/dev/null
+    sleep 1
+    rm "$MPV_SOCKET"
+  fi
+}
+
+_start_mpv() {
+  if [[ ! -S $MPV_SOCKET ]]; then
+    mpv --idle --input-ipc-server="$MPV_SOCKET" &>/dev/null &
+    sleep 5
+  fi
 }
 
 _play_stream() {
@@ -26,18 +41,14 @@ _play_stream() {
   url="$1"
   
   if [[ -n $url ]]; then
-    # if music session already exists, get rid of it
-    _stop_stream
-
-    # start a new session and start playing the stream
-    tmux new-session -ds music bash
-
-    tmux send-keys -t music.0 "mpv --no-video $url" ENTER
+    _start_mpv
+    echo '{ "command": ["set", "vid", "no"] }' | socat - "$MPV_SOCKET" &>/dev/null
+    echo "{ \"command\": [\"loadfile\", \"$url\"] }" | socat - "$MPV_SOCKET" &>/dev/null
   fi
 }
 
 
-_play(){
+_stream(){
   local stream_search_term
   stream_search_term="$*"
 
@@ -64,10 +75,26 @@ _play(){
   fi
 }
 
+_play() {
+  local file
+  file="${*:-"$HOME/music"}"
+  _start_mpv
+  echo '{ "command": ["set", "shuffle", "yes"] }' | socat - "$MPV_SOCKET" &>/dev/null
+  echo "{ \"command\": [\"loadfile\", \"$file\"] }" | socat - "$MPV_SOCKET" #&>/dev/null
+}
+
 _list(){
   while IFS= read -r line; do
     echo "${line% *}"
   done <"$STREAM_LIST"
+}
+
+_next(){
+  echo '{ "command": ["playlist-next"] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
+_prev(){
+  echo '{ "command": ["playlist-prev"] }' | socat - "$MPV_SOCKET" &>/dev/null
 }
 
 _edit() {
@@ -75,25 +102,25 @@ _edit() {
 }
 
 _music() {
-  # Don't do anyting if tmux is not installed
-  if ! { command -v tmux &>/dev/null && command -v mpv &>/dev/null; }; then
-    echo "TMUX and MPV must be installed" >&2
-    return 1
-  fi
 
   local cmd
   if [[ -n "$1" ]]; then
     cmd="$1"; shift
   fi
   case "$cmd" in
-    ""|play) _play "$@" ;;
+    ""|stream) _stream "$@" ;;
+    play) _play "$@" ;;
     stop) _stop_stream ;;
+    quit) _quit_mpv ;;
     edit) _edit ;;
     list) _list ;;
+    next) _next ;;
+    prev) _prev ;;
     help|*) 
       echo "USAGE:"
       echo "music"
-      echo "music play [stream_name]"
+      echo "music steam [stream_name]"
+      echo "music play [song_name|directory_name]"
       echo "music stop"
       echo "music edit"
       echo "music list"
