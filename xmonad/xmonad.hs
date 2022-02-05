@@ -80,6 +80,12 @@ myKeys =
   , ("M-z e", spawn "emoji")
   , ("M-c"  , spawn "dunstctl context")   -- dunst context menu
 
+  -- music controls
+  , ("M-m .", spawn "music next")
+  , ("M-m ,", spawn "music prev")
+  , ("M-m p", spawn "music pause")
+  , ("M-m u", spawn "music unpause")
+
   -- window management
   , ("M-q", kill)
 
