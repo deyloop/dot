@@ -79,6 +79,7 @@ _play() {
   local file
   file="${*:-"$HOME/music"}"
   _start_mpv
+  _unpause
   echo '{ "command": ["set", "vid", "no"] }' | socat - "$MPV_SOCKET" &>/dev/null
   echo '{ "command": ["set", "shuffle", "yes"] }' | socat - "$MPV_SOCKET" &>/dev/null
   echo "{ \"command\": [\"loadfile\", \"$file\"] }" | socat - "$MPV_SOCKET" #&>/dev/null
@@ -100,10 +101,25 @@ _prev(){
 
 _pause() {
   echo '{ "command": ["set", "pause", "yes" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+  notify-send -i audio-x-generic -t 5000 -- "Music Paused"
 }
 
 _unpause() {
   echo '{ "command": ["set", "pause", "no" ] }' | socat - "$MPV_SOCKET" &>/dev/null
+}
+
+function _toggle_pause() {
+  local resp
+  resp=$(
+     echo '{"command": ["get_property", "pause"]}' \
+     | socat - "$MPV_SOCKET" \
+     | jq -r .data
+  )
+
+  case "$resp" in
+    false) _pause ;;
+    true) _unpause ;;
+  esac
 }
 
 _loop() {
@@ -127,8 +143,7 @@ _music() {
   case "$cmd" in
     ""|stream) _stream "$@" ;;
     play) _play "$@" ;;
-    pause) _pause ;;
-    unpause) _unpause ;;
+    pause) _toggle_pause ;;
     loop) _loop ;;
     unloop) _unloop ;;
     stop) _stop_stream ;;
