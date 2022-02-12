@@ -156,6 +156,9 @@ nnoremap <leader>f :find<space>
 " Compile and open quickfix window
 nnoremap <leader>cb :silent! make\|copen<CR>:redraw!<CR>
 
+" Format Buffer
+nnoremap <leader>cf :FormatBuffer<cr>
+
 "--------------------------------Plugins--------------------------------
 let data_dir = VimStdPath('data')
 let plug_path = data_dir . '/autoload/plug.vim'
@@ -321,27 +324,27 @@ if !empty(glob(plug_path))
   set signcolumn=number
 
   " Auto-Formatting code on save
-  function! FormatBuffer(cmd)
-    if &modified
-      let cursor_pos = getpos('.')
-      execute "%!" . a:cmd
-      if v:shell_error | undo | endif
-      call setpos('.', cursor_pos)
-    endif
+  function! Format_Buffer(cmd)
+    let cursor_pos = getpos('.')
+    execute "%!" . a:cmd
+    if v:shell_error | undo | endif
+    call setpos('.', cursor_pos)
   endfunction
 
   augroup autoformat
     au!
     if executable("clang-format")
-      au BufWritePre *.c,*.cpp,*.h,*.hpp,*.cxx,*.hxx silent call FormatBuffer("clang-format")
+      au BufReadPost *.c,*.cpp,*.h,*.hpp,*.cxx,*.hxx let b:format_cmd = "clang-format"
     endif
     if executable("rustfmt")
-      au BufWritePre *.rs silent call FormatBuffer("rustfmt -q")
+      au BufReadPost *.rs let b:format_cmd = "rustfmt -q"
     endif
-    " if executable("black")
-    "   au BufWritePre *.py silent call FormatBuffer("black -q -")
-    " endif
+    if executable("black")
+      au BufReadPost *.py let b:format_cmd = "black -q -"
+    endif
   augroup END
+
+  command! FormatBuffer silent call Format_Buffer(b:format_cmd)
 
   " Code folding
   set nofoldenable
