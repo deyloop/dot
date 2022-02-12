@@ -81,10 +81,9 @@ myKeys =
   , ("M-c"  , spawn "dunstctl context")   -- dunst context menu
 
   -- music controls
-  , ("M-m .", spawn "music next")
-  , ("M-m ,", spawn "music prev")
-  , ("M-m p", spawn "music pause")
-  , ("M-m u", spawn "music unpause")
+  , ("<XF86AudioNext>", spawn "music next")
+  , ("<XF86AudioPrev>", spawn "music prev")
+  , ("<XF86AudioPlay>", spawn "music pause")
 
   -- window management
   , ("M-q", kill)
