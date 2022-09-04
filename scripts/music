@@ -101,7 +101,6 @@ _prev(){
 
 _pause() {
   echo '{ "command": ["set", "pause", "yes" ] }' | socat - "$MPV_SOCKET" &>/dev/null
-  notify-send -i audio-x-generic -t 5000 -- "Music Paused"
 }
 
 _unpause() {

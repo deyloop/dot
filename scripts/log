@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# temporary hardcoding
+LOGS_DIR=/home/deyloop/docs/logs
+TODAY_LOG_FILE=$(ls -1 "$LOGS_DIR" | sort | tail -1)
+
+LOG_FILE_PATH="$LOGS_DIR/$TODAY_LOG_FILE"
+
+echo $(date +"%H%M") "$@" >>"$LOG_FILE_PATH"
+

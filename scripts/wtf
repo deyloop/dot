@@ -1,0 +1,29 @@
+#!/usr/bin/bash
+
+# Keeps track of How many WTFs happen during using this computer
+# takes no arguments
+
+# File to store the WTFs in. 
+WTFFILE="${XDG_DATA_HOME}/wtf.log"
+
+_filter_last_hour() {
+  time_hour_back="$(date -d -1hour +"%s")"
+  while IFS= read -ra args; do
+    time_diff="$((args - time_hour_back))"
+    if [[ time_diff -gt 0 ]]; then
+      echo "${time_diff}"
+    fi
+  done
+}
+
+_count_last_hour() {
+  tail -n 3600 "${WTFFILE}" | _filter_last_hour | wc -l
+}
+
+_wtf() {
+  echo "$(date +"%s")" >> "${WTFFILE}"
+  echo "$(_count_last_hour) WTFs in the last hour"
+}
+
+_wtf
+
