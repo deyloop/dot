@@ -4,7 +4,7 @@
 # takes no arguments
 
 # File to store the WTFs in. 
-WTFFILE="${XDG_DATA_HOME}/wtf.log"
+WTFFILE="${XDG_DATA_HOME:-"${HOME}/.local/share"}/wtf.log"
 
 _filter_last_hour() {
   time_hour_back="$(date -d -1hour +"%s")"
