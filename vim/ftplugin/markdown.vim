@@ -1,2 +1,5 @@
 set autochdir
-set textwidth=72
+setlocal wrap
+setlocal linebreak
+setlocal spell
+

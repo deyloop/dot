@@ -1,10 +1,20 @@
 #!/usr/bin/bash
 
 # temporary hardcoding
-LOGS_DIR=/home/deyloop/docs/logs
-TODAY_LOG_FILE=$(ls -1 "$LOGS_DIR" | sort | tail -1)
+LOGS_DIR="${HOME}/docs/logs"
+TODAY_LOG_FILE="$(isodate)"
 
 LOG_FILE_PATH="$LOGS_DIR/$TODAY_LOG_FILE"
+
+if [[ "$1" -eq "--last" ]]; then
+  l
+fi
+
+if [[ ! -f LOG_FILE_PATH ]]; then
+  echo "creating new log file for today at ${LOG_FILE_PATH}" 
+  echo "# $(date +"%A, %d %B, %Y")" >> "$LOG_FILE_PATH"
+  echo "" >> "$LOG_FILE_PATH"
+fi
 
 echo $(date +"%H%M") "$@" >>"$LOG_FILE_PATH"
 
