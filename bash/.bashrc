@@ -170,6 +170,8 @@ CDPATH+=":~"
 
 #--------------------------------Aliases--------------------------------
 
+alias vim='VIMINIT="set nocp | source ${XDG_CONFIG_HOME}/vim/vimrc" VIMXDG=1 /usr/bin/vim'
+
 alias cp="cp -i"                  # confirm before overwriting something
 alias df='df -h'                  # human-readable sizes
 alias free='free -m'              # show sizes in MB
@@ -179,3 +181,6 @@ alias '?'=duck
 
 type -P cdl.sh &>/dev/null && source cdl.sh # this is also like an alias
 #-----------------------------------------------------------------------
+
+# opencode
+export PATH=/home/deyloop/.opencode/bin:$PATH

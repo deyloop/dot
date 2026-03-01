@@ -23,10 +23,6 @@ export XDG_CACHE_HOME
 
 #---------------------------------Editor--------------------------------
 
-# making vim conform to XDG Base Directory Specification
-export VIMINIT="set nocp | source ${XDG_CONFIG_HOME}/vim/vimrc"
-export VIMXDG=1
-
 # default editor
 export EDITOR=/usr/bin/vim
 export VISUAL=/usr/bin/vim
