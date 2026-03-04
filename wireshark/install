@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+echo "Installing Wireshark"
+
+if command -v apt >/dev/null 2>&1; then
+  sudo apt-get install -y wireshark
+fi
+
+sudo usermod -aG wireshark $USER
+newgrp wireshark
+
+echo "Enabling USB monitoring kernel module"
+sudo modprobe usbmon
+echo usbmon | sudo tee -a /etc/modules
+
