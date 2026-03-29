@@ -1,0 +1,52 @@
+[colors.bright]
+black = "#585858"
+blue = "#ffaf00"
+cyan = "#00afaf"
+green = "#afd700"
+magenta = "#ff5faf"
+red = "#5faf5f"
+white = "#5f8787"
+yellow = "#af87d7"
+
+[colors.normal]
+black = "#131517"
+blue = "#5fafd7"
+cyan = "#d7875f"
+green = "#5faf00"
+magenta = "#808080"
+red = "#af005f"
+white = "#d0d0d0"
+yellow = "#d7af5f"
+
+[colors.primary]
+background = "#131517"
+foreground = "#d0d0d0"
+
+[cursor.style]
+blinking = "Always"
+shape = "Block"
+
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 10.0
+
+[font.bold]
+family = "Hack"
+style = "Bold"
+
+[font.bold_italic]
+family = "Hack"
+style = "Bold Italic"
+
+[font.italic]
+family = "Hack"
+style = "Italic"
+
+[font.normal]
+family = "Hack"
+style = "Regular"
+
+[window]
+dynamic_title = true
