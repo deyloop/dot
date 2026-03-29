@@ -58,6 +58,10 @@ export REPOS_DIR="$HOME/repos"
 PATH="$CARGO_HOME:$PATH"
 PATH="$SCRIPTS_DIR:$PATH"
 PATH="$HOME/.local/bin:$PATH"
+PATH="$PATH:$HOME/.local/go/bin"
+
+export GOPATH="$HOME/.local/go/packages"
+PATH="$PATH:$GOPATH/bin"
 export PATH
 
 

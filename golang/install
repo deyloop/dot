@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Replace with latest version from https://go.dev/dl/
+GO_VERSION="1.26.1"
+curl -OL https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+mkdir -p ~/.local/go
+tar -C ${HOME}/.local/go -xzf go${GO_VERSION}.linux-amd64.tar.gz --strip-components=1
+rm go${GO_VERSION}.linux-amd64.tar.gz
+
