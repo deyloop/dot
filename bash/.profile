@@ -55,10 +55,11 @@ export REPOS_DIR="$HOME/repos"
 
 #----------------------------------PATH---------------------------------
 
-# Prepend directories to PATH, skipping any that are already present.
+# Prepend directories to PATH, skipping any that are already present or missing.
 path_prefix() {
   _path_prefix_dir=
   for _path_prefix_dir in "$@"; do
+    [ -d "$_path_prefix_dir" ] || continue
     case ":${PATH}:" in
       *:"${_path_prefix_dir}":*) ;;
       *) PATH="${_path_prefix_dir}:${PATH}" ;;
@@ -68,10 +69,11 @@ path_prefix() {
   unset _path_prefix_dir
 }
 
-# Append directories to PATH, skipping any that are already present.
+# Append directories to PATH, skipping any that are already present or missing.
 path_postfix() {
   _path_postfix_dir=
   for _path_postfix_dir in "$@"; do
+    [ -d "$_path_postfix_dir" ] || continue
     case ":${PATH}:" in
       *:"${_path_postfix_dir}":*) ;;
       *) PATH="${PATH}:${_path_postfix_dir}" ;;

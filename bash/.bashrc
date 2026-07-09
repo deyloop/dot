@@ -188,6 +188,8 @@ if type path_prefix >/dev/null 2>&1; then
 else
   case ":${PATH}:" in
     *:"$HOME/.opencode/bin":*) ;;
-    *) export PATH="$HOME/.opencode/bin:$PATH" ;;
+    *)
+      [ -d "$HOME/.opencode/bin" ] && export PATH="$HOME/.opencode/bin:$PATH"
+      ;;
   esac
 fi
