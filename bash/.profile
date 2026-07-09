@@ -55,14 +55,36 @@ export REPOS_DIR="$HOME/repos"
 
 #----------------------------------PATH---------------------------------
 
-PATH="$CARGO_HOME:$PATH"
-PATH="$SCRIPTS_DIR:$PATH"
-PATH="$HOME/.local/bin:$PATH"
-PATH="$PATH:$HOME/.local/go/bin"
+# Prepend directories to PATH, skipping any that are already present.
+path_prefix() {
+  _path_prefix_dir=
+  for _path_prefix_dir in "$@"; do
+    case ":${PATH}:" in
+      *:"${_path_prefix_dir}":*) ;;
+      *) PATH="${_path_prefix_dir}:${PATH}" ;;
+    esac
+  done
+  export PATH
+  unset _path_prefix_dir
+}
+
+# Append directories to PATH, skipping any that are already present.
+path_postfix() {
+  _path_postfix_dir=
+  for _path_postfix_dir in "$@"; do
+    case ":${PATH}:" in
+      *:"${_path_postfix_dir}":*) ;;
+      *) PATH="${PATH}:${_path_postfix_dir}" ;;
+    esac
+  done
+  export PATH
+  unset _path_postfix_dir
+}
+
+path_prefix "$CARGO_HOME" "$SCRIPTS_DIR" "$HOME/.local/bin"
 
 export GOPATH="$HOME/.local/go/packages"
-PATH="$PATH:$GOPATH/bin"
-export PATH
+path_postfix "$HOME/.local/go/bin" "$GOPATH/bin"
 
 
 #-----------------------------------------------------------------------
