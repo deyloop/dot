@@ -38,20 +38,15 @@ export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 
 #----------------------Misc Environment Variables-----------------------
 
-export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME/aws/credentials"
-export AWS_CONFIG_FILE="$XDG_CONFIG_HOME/aws/config"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
-export CARGO_HOME="$XDG_DATA_HOME/cargo"
-export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
-export GO_PATH="$XDG_DATA_HOME/go"
-export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+# Program-specific environment variables and PATH entries live in
+# $XDG_CONFIG_HOME/bash/profile.d/*.sh. Each install/setup script symlinks
+# the snippets it needs, similar to /etc/profile.d or modprobe.d.
 
 
 #---------------------Personal Environment Variables--------------------
 
-export SCRIPTS_DIR="$HOME/.local/bin/scripts"
-export GITHUB_USER="$USER"
-export REPOS_DIR="$HOME/repos"
+# See profile.d/00-personal.sh (symlinked by bash/setup)
+
 
 #----------------------------------PATH---------------------------------
 
@@ -83,10 +78,17 @@ path_postfix() {
   unset _path_postfix_dir
 }
 
-path_prefix "$CARGO_HOME" "$SCRIPTS_DIR" "$HOME/.local/bin"
+#-------------------------------Profile.d-------------------------------
 
-export GOPATH="$HOME/.local/go/packages"
-path_postfix "$HOME/.local/go/bin" "$GOPATH/bin"
+_profile_d="${XDG_CONFIG_HOME}/bash/profile.d"
+if [ -d "$_profile_d" ]; then
+  for _profile in "$_profile_d"/*.sh; do
+    [ -f "$_profile" ] || continue
+    . "$_profile"
+  done
+  unset _profile
+fi
+unset _profile_d
 
 
 #-----------------------------------------------------------------------

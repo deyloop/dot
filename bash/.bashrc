@@ -181,15 +181,3 @@ alias '?'=duck
 
 type -P cdl.sh &>/dev/null && source cdl.sh # this is also like an alias
 #-----------------------------------------------------------------------
-
-# opencode
-if type path_prefix >/dev/null 2>&1; then
-  path_prefix "$HOME/.opencode/bin"
-else
-  case ":${PATH}:" in
-    *:"$HOME/.opencode/bin":*) ;;
-    *)
-      [ -d "$HOME/.opencode/bin" ] && export PATH="$HOME/.opencode/bin:$PATH"
-      ;;
-  esac
-fi

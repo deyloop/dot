@@ -8,3 +8,10 @@ GLOBIGNORE='.:..'
 for f in $SCRIPT_DIR/.[pb]*; do
   ln -sf "$f" "$HOME/${f##*/}"
 done
+
+# Core profile.d snippets that ship with the dotfiles setup.
+# Optional program snippets are symlinked by each program's install script.
+# shellcheck source=profile-link.sh
+source "$SCRIPT_DIR/profile-link.sh"
+link_bash_profile 00-personal
+link_bash_profile 10-local-bin

@@ -1,12 +1,9 @@
 #!/usr/bin/bash
 
-if command -v apt >/dev/null 2>&1; then
-  sudo apt-get install -y rustup
-fi
-
-rustup toolchain install stable
+# Enable shell integration after installing OpenCode.
+# https://opencode.ai
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../bash/profile-link.sh
 source "$SCRIPT_DIR/../bash/profile-link.sh"
-link_bash_profile rust
+link_bash_profile opencode
