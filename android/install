@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+ANDROID_HOME="/opt/android-sdk"
+NDK_VERSION="27.1.12297006"
+
+if ! command -v apt-get >/dev/null 2>&1; then
+  echo "android/install requires apt-get." >&2
+  exit 1
+fi
+
+if [[ "$(dpkg --print-architecture)" != "amd64" ]]; then
+  echo "Google's Android CLI apt repository only supports amd64." >&2
+  exit 1
+fi
+
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  ca-certificates \
+  curl \
+  openjdk-17-jdk-headless
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub |
+  sudo tee /etc/apt/keyrings/google.asc >/dev/null
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.asc] http://dl.google.com/android/cli/latest/debian/ stable main" |
+  sudo tee /etc/apt/sources.list.d/android-cli.list >/dev/null
+
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends android-cli
+sudo rm -rf /var/lib/apt/lists/*
+
+sudo mkdir -p "$ANDROID_HOME"
+sudo chown "$(id -u):$(id -g)" "$ANDROID_HOME"
+
+export ANDROID_HOME="$ANDROID_HOME"
+export NDK_HOME="$ANDROID_HOME/ndk/$NDK_VERSION"
+
+android --sdk="$ANDROID_HOME" sdk install \
+  platforms/android-34 \
+  build-tools/34.0.0 \
+  platform-tools \
+  "ndk@$NDK_VERSION"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../bash/profile-link.sh"
+link_bash_profile android
