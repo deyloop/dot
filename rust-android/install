@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+# Add Android targets to an existing Rust toolchain (run rust/install first).
+
+if ! command -v rustup >/dev/null 2>&1; then
+  echo "rustup is required; run rust/install first." >&2
+  exit 1
+fi
+
+rustup target add \
+  aarch64-linux-android \
+  armv7-linux-androideabi \
+  i686-linux-android \
+  x86_64-linux-android
