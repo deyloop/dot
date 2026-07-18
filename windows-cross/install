@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+set -e
+
+if command -v apt >/dev/null 2>&1; then
+  sudo DEBIAN_FRONTEND=noninteractive apt-get update
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    mingw-w64 \
+    libc6-dev-i386 \
+    lib32z1 \
+    lib32stdc++6
+  sudo rm -rf /var/lib/apt/lists/*
+fi
