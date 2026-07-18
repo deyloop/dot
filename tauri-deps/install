@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+set -e
+
+if command -v apt >/dev/null 2>&1; then
+  sudo DEBIAN_FRONTEND=noninteractive apt-get update
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    libwebkit2gtk-4.1-dev \
+    libxdo-dev \
+    libssl-dev \
+    libayatana-appindicator3-dev \
+    librsvg2-dev \
+    file
+  sudo rm -rf /var/lib/apt/lists/*
+fi
