@@ -181,6 +181,3 @@ alias '?'=duck
 
 type -P cdl.sh &>/dev/null && source cdl.sh # this is also like an alias
 #-----------------------------------------------------------------------
-
-# opencode
-export PATH=/home/deyloop/.opencode/bin:$PATH

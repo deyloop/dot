@@ -7,3 +7,7 @@ mkdir -p ~/.local/go
 tar -C ${HOME}/.local/go -xzf go${GO_VERSION}.linux-amd64.tar.gz --strip-components=1
 rm go${GO_VERSION}.linux-amd64.tar.gz
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../bash/profile-link.sh
+source "$SCRIPT_DIR/../bash/profile-link.sh"
+link_bash_profile golang

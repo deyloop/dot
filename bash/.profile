@@ -38,31 +38,57 @@ export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 
 #----------------------Misc Environment Variables-----------------------
 
-export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME/aws/credentials"
-export AWS_CONFIG_FILE="$XDG_CONFIG_HOME/aws/config"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
-export CARGO_HOME="$XDG_DATA_HOME/cargo"
-export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
-export GO_PATH="$XDG_DATA_HOME/go"
-export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+# Program-specific environment variables and PATH entries live in
+# $XDG_CONFIG_HOME/bash/profile.d/*.sh. Each install/setup script symlinks
+# the snippets it needs, similar to /etc/profile.d or modprobe.d.
 
 
 #---------------------Personal Environment Variables--------------------
 
-export SCRIPTS_DIR="$HOME/.local/bin/scripts"
-export GITHUB_USER="$USER"
-export REPOS_DIR="$HOME/repos"
+# See profile.d/00-personal.sh (symlinked by bash/setup)
+
 
 #----------------------------------PATH---------------------------------
 
-PATH="$CARGO_HOME:$PATH"
-PATH="$SCRIPTS_DIR:$PATH"
-PATH="$HOME/.local/bin:$PATH"
-PATH="$PATH:$HOME/.local/go/bin"
+# Prepend directories to PATH, skipping any that are already present or missing.
+path_prefix() {
+  _path_prefix_dir=
+  for _path_prefix_dir in "$@"; do
+    [ -d "$_path_prefix_dir" ] || continue
+    case ":${PATH}:" in
+      *:"${_path_prefix_dir}":*) ;;
+      *) PATH="${_path_prefix_dir}:${PATH}" ;;
+    esac
+  done
+  export PATH
+  unset _path_prefix_dir
+}
 
-export GOPATH="$HOME/.local/go/packages"
-PATH="$PATH:$GOPATH/bin"
-export PATH
+# Append directories to PATH, skipping any that are already present or missing.
+path_postfix() {
+  _path_postfix_dir=
+  for _path_postfix_dir in "$@"; do
+    [ -d "$_path_postfix_dir" ] || continue
+    case ":${PATH}:" in
+      *:"${_path_postfix_dir}":*) ;;
+      *) PATH="${PATH}:${_path_postfix_dir}" ;;
+    esac
+  done
+  export PATH
+  unset _path_postfix_dir
+}
+
+#-------------------------------Profile.d-------------------------------
+
+_profile_d="${XDG_CONFIG_HOME}/bash/profile.d"
+if [ -d "$_profile_d" ]; then
+  for _profile in "$_profile_d"/*.sh; do
+    [ -f "$_profile" ] || continue
+    . "$_profile"
+  done
+  unset _profile
+fi
+unset _profile_d
 
 
 #-----------------------------------------------------------------------
