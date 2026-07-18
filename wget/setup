@@ -9,6 +9,5 @@
 echo hsts-file \= "$XDG_CACHE_HOME"/wget/wget-hsts > "$XDG_CONFIG_HOME/wget/wgetrc"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=../bash/profile-link.sh
 source "$SCRIPT_DIR/../bash/profile-link.sh"
 link_bash_profile wget
