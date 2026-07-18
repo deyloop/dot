@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+curl -fsSL https://bun.com/install | bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../bash/profile-link.sh
+source "$SCRIPT_DIR/../bash/profile-link.sh"
+link_bash_profile bun
